@@ -124,7 +124,10 @@ def run(rank, world_size, data_split, edge_index, x, quiver_sampler, y, num_feat
 
 
 if __name__ == '__main__':
-    dataset = Reddit('/data/Reddit')
+    start = time.time()
+    path = os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', '..', '..', 'data', 'Reddit')
+    # dataset = Reddit('/data/Reddit')
+    dataset = Reddit(path)
     world_size = torch.cuda.device_count()
 
     data = dataset[0]
@@ -147,3 +150,5 @@ if __name__ == '__main__':
         nprocs=world_size,
         join=True
     )
+    end = time.time()
+    print(end - start)

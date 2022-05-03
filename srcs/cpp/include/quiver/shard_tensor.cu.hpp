@@ -7,15 +7,23 @@
 __device__ int find(const int64_t *offsets, const int device_count,
                     const int64_t index)
 {
-    if(index < 0){
-    	return -1;
-    }
     int i = 1;
-    for (i = 1; i <= device_count; i++) {
+    for (i = 1; i < device_count; i++) {
         if (index < offsets[i]) { return i - 1; }
     }
-    return -1;
+    return device_count - 1;
 }
+
+// quiver_tensor_gather<<<numBlocks, blockSize, 0, stream>>>(
+//     buffers_device, offset_device, offset_list_.size(),
+//     indices.data_ptr<int64_t>(), indices.numel(), res.data_ptr<float>(),
+//     stride(0), access_book_device, ignore_access_book);
+
+// buffers_device 里面含有指向 cpu gpu 数据的指针
+// offset_device 每个指针指向的数据的范围是多大
+// indices 需要取出节点的索引
+// 如果是我，我会这么写
+// 依据 offset_device 判断 indices 在哪一个范围，从 buffer_device 中取出对应的指针，然后读取出数据
 __global__ void quiver_tensor_gather(float **dev_ptrs, const int64_t *offsets,
                                      const int device_count,
                                      const int64_t *indices, int indice_length,
@@ -46,7 +54,7 @@ __global__ void quiver_tensor_gather(float **dev_ptrs, const int64_t *offsets,
         local_start = thread_start;
         dev_index = find(offsets, device_count, indices[warp_start]);
         // we only copy data from reachable device
-        if (dev_index != -1 && (ignore_access_book || access_book[dev_index] == 1)) {
+        if (ignore_access_book || access_book[dev_index] == 1) {
             dev_ptr = dev_ptrs[dev_index];
             dev_offset = indices[warp_start] - offsets[dev_index];
             src_copy_start = dev_offset * stride;

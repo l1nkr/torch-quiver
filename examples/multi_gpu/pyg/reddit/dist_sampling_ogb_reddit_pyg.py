@@ -1,5 +1,5 @@
 import os
-
+import os.path as osp
 import torch
 from tqdm import tqdm
 import torch.nn.functional as F
@@ -63,6 +63,7 @@ class SAGE(torch.nn.Module):
 def run(rank, world_size, data_split, edge_index, x, y, num_features, num_classes):
     os.environ['MASTER_ADDR'] = 'localhost'
     os.environ['MASTER_PORT'] = '12355'
+    # 该函数需要在每个进程中进行调用，用于初始化该进程。在使用分布式时，该函数必须在 distributed 内所有相关函数之前使用。
     dist.init_process_group('nccl', rank=rank, world_size=world_size)
 
     train_mask, val_mask, test_mask = data_split    
@@ -73,7 +74,7 @@ def run(rank, world_size, data_split, edge_index, x, y, num_features, num_classe
                                    sizes=[25, 10], batch_size=1024,
                                    shuffle=True, persistent_workers=True,
                                    num_workers= os.cpu_count() // world_size)
-
+    # 如果是 master 节点
     if rank == 0:
         subgraph_loader = NeighborSampler(edge_index, node_idx=None,
                                           sizes=[-1], batch_size=2048,
@@ -120,7 +121,9 @@ def run(rank, world_size, data_split, edge_index, x, y, num_features, num_classe
 
 
 if __name__ == '__main__':
-    dataset = Reddit('/data/Reddit')
+    path = osp.join(osp.dirname(osp.realpath(__file__)), '..', '..', '..', 'data', 'Reddit')
+    # dataset = Reddit('/data/Reddit')
+    dataset = Reddit(path)
     data = dataset[0]
     world_size = 1#torch.cuda.device_count()
     print('Let\'s use', world_size, 'GPUs!')

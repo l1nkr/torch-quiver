@@ -62,16 +62,22 @@ class quiver<T, CPU>
         std::vector<T> output_counts(bs);
         std::vector<T> output_count_prefix_sum(bs + 1);
         output_count_prefix_sum[0] = 0;
-
+        // 也就是 node_count
         const T n = row_ptr_.size();
+        // 也就是 edge_count
         const T m = col_idx_.size();
 
-        std::cout<<"get num threads "<< at::get_num_threads()<<std::endl;
+        // std::cout<<"get num threads "<< at::get_num_threads()<<std::endl;
         
+        // 0 ~ bs 是我们需要进行采样的节点
+        // lambda 表达式所捕捉的 start end 就是将 0 ~ bs 分成多个小段，
+        // 然后会有不同的线程会对这些节点进行处理
         at::parallel_for(0, bs, 1, [&](size_t start, size_t end){
             for(size_t i = start; i < end; i++){
                 T v = inputs[i];
+                // 通过 csr 矩阵获取 target node 的相关信息
                 T begin = row_ptr_[v];
+                // 这里的逻辑是什么。
                 const T end = v + 1 < n ? row_ptr_[v + 1] : m;
                 output_counts[i] = (end - begin) < k ? end - begin : k;
             }

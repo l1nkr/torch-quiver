@@ -3,7 +3,8 @@ set -e
 
 . ./auto/cmake
 
-CUDA_HOME=/usr/local/cuda
+CUDA_HOME=/home/lf/cuda10.2
+# CUDA_HOME=/usr/local/cuda
 CUDA_ARCHITECTURES="61" # FIXME: detect
 
 HAVE_CUDA=0

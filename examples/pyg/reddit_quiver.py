@@ -8,7 +8,10 @@ from torch_geometric.loader import NeighborSampler
 from torch_geometric.nn import SAGEConv
 
 import quiver
-
+import time
+# torch.cuda.set_device(1)
+# 这个模型使用单 gpu 进行训练，并没有使用多 gpu 进行训练
+start = time.time()
 path = osp.join(osp.dirname(osp.realpath(__file__)), '..', 'data', 'Reddit')
 dataset = Reddit(path)
 data = dataset[0]
@@ -21,12 +24,15 @@ train_idx = data.train_mask.nonzero(as_tuple=False).view(-1)
 # train_loader = NeighborSampler(data.edge_index, node_idx=data.train_mask,
 #                               sizes=[25, 10], batch_size=1024, shuffle=True,
 #                               num_workers=12) # Original PyG Code
+# 从 train_idx 中每次抽出batch size个样本
 train_loader = torch.utils.data.DataLoader(train_idx,
                                            batch_size=1024,
                                            shuffle=True,
                                            drop_last=True) # Quiver
 csr_topo = quiver.CSRTopo(data.edge_index) # Quiver
-quiver_sampler = quiver.pyg.GraphSageSampler(csr_topo, sizes=[25, 10], device=0, mode='GPU') # Quiver
+
+# 注意这里仅仅是初始化了一个对象，并没有进行实际的采样
+quiver_sampler = quiver.pyg.GraphSageSampler(csr_topo, sizes=[25, 10], device=0, device_cache_size="0.1G", mode='GPU') # Quiver
 
 
 subgraph_loader = NeighborSampler(data.edge_index, node_idx=None, sizes=[-1],
@@ -96,7 +102,13 @@ optimizer = torch.optim.Adam(model.parameters(), lr=0.01)
 # Step 2: Using Quiver's Feature
 ################################
 # x = data.x.to(device) # Original PyG Code
-x = quiver.Feature(rank=0, device_list=[0], device_cache_size="4G", cache_policy="device_replicate", csr_topo=csr_topo) # Quiver
+
+# 依据 csr_topo 这个拓扑图，得到热点数据，这些数据应该是 hot data 所对应的 feature，然后决定哪部分放到 cpu 哪部分放到 gpu
+# x 是 Feature 这个类的一个对象
+x = quiver.Feature(rank=0, device_list=[0], device_cache_size="0.25G", cache_policy="device_replicate", csr_topo=csr_topo) # Quiver
+
+# 把原先的数据分到 gpu 或者 cpu 上去（具体如何分，取决于之前传入的参数）
+# data.x 里面存的不是图的 topo，里面存的是节点的特征信息
 x.from_cpu_tensor(data.x) # Quiver
 
 y = data.y.squeeze().to(device)
@@ -113,12 +125,18 @@ def train(epoch):
     # Step 3: Training the PyG Model with Quiver
     ############################################
     # for batch_size, n_id, adjs in train_loader: # Original PyG Code
-    for seeds in train_loader: # Quiver
-        n_id, batch_size, adjs = quiver_sampler.sample(seeds) # Quiver
+    for target in train_loader: # Quiver
+        
+        # target 来自 train_loader，train_loader 是没有经过任何处理的训练集，里面应该只有一些节点信息，没有 topo 图之类的。
+        # quiver_sample 中存有全局的图信息。
+        # 利用全局图信息，加上训练集 node 的 index，就可以进行采样了
+        n_id, batch_size, adjs = quiver_sampler.sample(target) # Quiver
         # `adjs` holds a list of `(edge_index, e_id, size)` tuples.
         adjs = [adj.to(device) for adj in adjs]
 
         optimizer.zero_grad()
+        # 使用采样得到的 n_id adjs ，来索引图中的节点，然后进行聚合操作。
+        # 这一步的魅力在于，x 也即是 节点特征 的存储位置是经过优化的
         out = model(x[n_id], adjs)
         loss = F.nll_loss(out, y[n_id[:batch_size]])
         loss.backward()
@@ -152,9 +170,11 @@ def test():
     return results
 
 
-for epoch in range(1, 11):
+for epoch in range(1, 5):
     loss, acc = train(epoch)
     print(f'Epoch {epoch:02d}, Loss: {loss:.4f}, Approx. Train: {acc:.4f}')
     train_acc, val_acc, test_acc = test()
     print(f'Train: {train_acc:.4f}, Val: {val_acc:.4f}, '
           f'Test: {test_acc:.4f}')
+end = time.time()
+print(end - start)

@@ -527,6 +527,7 @@ class PartitionInfo:
 
 
 class DistFeature:
+    # 用于多机分布式情况
     """DistFeature stores local features and it can fetch remote features by the network.
     Normally, each trainer process holds a DistFeature object. 
     We can create DistFeature by a local feature object, a partition information object and a network communicator.

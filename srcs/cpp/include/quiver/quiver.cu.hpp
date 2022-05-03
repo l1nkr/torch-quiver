@@ -30,6 +30,10 @@ namespace quiver
 template <typename T>
 class get_adj_diff
 {
+
+    // x 节点
+    // n 节点数
+    // tot 边数
     const T *x;
     const size_t n;
     const size_t tot;
@@ -39,9 +43,14 @@ class get_adj_diff
         : x(x), n(n), tot(tot)
     {
     }
+    // thrust::transform(
+    //     thrust::cuda::par.on(stream), input_begin, input_end,
+    //     output_begin,
+    //     get_adj_diff<T>(row_ptr_mapped_, node_count_, edge_count_));
 
     __host__ __device__ T operator()(T i) const
-    {
+    {   
+        
         const T end = i + 1 < n ? x[i + 1] : tot;
         return end - x[i];
     }
@@ -376,7 +385,13 @@ class quiver<T, CUDA>
             return std::make_pair(row_ptr_mapped_, col_idx_mapped_);
         }
     }
-
+    // k 采样节点数 （25）
+    // input_begin 需要进行采样的节点
+    // input_size = input_begin.size()
+    // output_ptr_begin 在这个节点之前需要采样多少个节点
+    // output_count_begin 对应 input_begin 中每个节点需要采样多少个节点
+    // output_begin 大小为总采样节点个数的空 vector，返回最终结果，需要扩散到哪些节点
+    // output_idx 大小为总采样节点个数的空 vector
     void new_sample(const cudaStream_t stream, int k, T *input_begin,
                     int input_size, T *output_ptr_begin, T *output_count_begin,
                     T *output_begin, T *output_idx) const

@@ -6,7 +6,9 @@ from tqdm import tqdm
 from torch_geometric.datasets import Reddit
 from torch_geometric.loader import NeighborSampler
 from torch_geometric.nn import SAGEConv
-
+import time
+torch.cuda.set_device(2)
+start = time.time()
 path = osp.join(osp.dirname(osp.realpath(__file__)), '..', 'data', 'Reddit')
 dataset = Reddit(path)
 data = dataset[0]
@@ -84,7 +86,7 @@ def train(epoch):
     model.train()
 
     pbar = tqdm(total=int(data.train_mask.sum()))
-    pbar.set_description(f'Epoch {epoch:02d}')
+    # pbar.set_description(f'Epoch {epoch:02d}')
 
     total_loss = total_correct = 0
     for batch_size, n_id, adjs in train_loader:
@@ -125,9 +127,12 @@ def test():
     return results
 
 
-for epoch in range(1, 11):
+for epoch in range(1, 2):
     loss, acc = train(epoch)
-    print(f'Epoch {epoch:02d}, Loss: {loss:.4f}, Approx. Train: {acc:.4f}')
+    # print(f'Epoch {epoch:02d}, Loss: {loss:.4f}, Approx. Train: {acc:.4f}')
     train_acc, val_acc, test_acc = test()
-    print(f'Train: {train_acc:.4f}, Val: {val_acc:.4f}, '
-          f'Test: {test_acc:.4f}')
+    #print(f'Train: {train_acc:.4f}, Val: {val_acc:.4f}, '
+          # f'Test: {test_acc:.4f}')
+
+end = time.time()
+print(end - start)

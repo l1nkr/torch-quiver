@@ -4,6 +4,22 @@
 
 constexpr int WARP_SIZE = 32;
 
+
+// k 采样节点数 （25）
+// input_begin 需要进行采样的节点
+// input_size = input_begin.size()
+// row_ptr_mapped_  csr 格式的索引，用于 zero_copy 格式，在分配 gpu cpu 内存时得到的指针
+// col_idx_mapped_  csr 格式的索引，用于 zero_copy 格式，在分配 gpu cpu 内存时得到的指针
+// output_ptr_begin 在这个集诶单需要采样多少个节点
+// output_count_begin 对应 input_begin 中每个节点需要采样多少个节点
+// output_begin 大小为总采样节点个数的空 vector，返回最终结果，需要扩散到哪些节点
+// output_idx 大小为总采样节点个数的空 vector
+
+//  CSRRowWiseSampleKernel<T, BLOCK_WARPS, TILE_SIZE>
+//      <<<grid, block, 0, stream>>>(
+//             0, k, input_size, 
+//             input_begin, row_ptr_mapped_, col_idx_mapped_, 
+//             output_ptr_begin, output_count_begin, output_begin, output_idx);
 template <typename T, int BLOCK_WARPS, int TILE_SIZE>
 __global__ void CSRRowWiseSampleKernel(
     const uint64_t rand_seed, int num_picks, const int64_t num_rows,
@@ -23,13 +39,15 @@ __global__ void CSRRowWiseSampleKernel(
                 threadIdx.y * WARP_SIZE + threadIdx.x, 0, &rng);
 
     while (out_row < last_row) {
+        // in_rows 需要进行采样的节点
         const int64_t row = in_rows[out_row];
-
+        // csr 格式的索引
         const int64_t in_row_start = in_ptr[row];
+        // in_ptr[row + 1] - in_ptr[in_rows[out_row]]
         const int64_t deg = in_ptr[row + 1] - in_row_start;
-
+        // out_ptr 在这个节点采样多少邻居
         const int64_t out_row_start = out_ptr[out_row];
-
+        // num_picks 采样节点数（25） 
         if (deg <= num_picks) {
             // just copy row
             for (int idx = threadIdx.x; idx < deg; idx += WARP_SIZE) {

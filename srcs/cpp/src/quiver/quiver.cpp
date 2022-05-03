@@ -25,15 +25,20 @@ class CPUQuiver
         std::vector<T> inputs(bs);
         std::copy(vertices.data_ptr<T>(), vertices.data_ptr<T>() + bs,
                   inputs.begin());
+        
+        // 采样 kernel 函数
         auto res = quiver_.sample_kernel(inputs, k);
+
         auto &outputs = std::get<0>(res);
         auto &output_counts = std::get<1>(res);
         size_t total = outputs.size();
+
         torch::Tensor out = torch::empty(total, vertices.options());
         torch::Tensor counts = torch::empty(bs, vertices.options());
         std::copy(outputs.begin(), outputs.end(), out.data_ptr<T>());
         std::copy(output_counts.begin(), output_counts.end(),
                   counts.data_ptr<T>());
+
         return std::make_tuple(out, counts);
     }
 
@@ -109,9 +114,9 @@ CPUQuiver cpu_quiver_from_csr_array(torch::Tensor &input_indptr,
     using T = int64_t;
     using Q = quiver<T, CPU>;
     check_eq<int64_t>(input_indptr.dim(), 1);
-    const size_t node_count = input_indptr.size(0) - 1;
-
     check_eq<int64_t>(input_indices.dim(), 1);
+
+    const size_t node_count = input_indptr.size(0) - 1;
     const size_t edge_count = input_indices.size(0);
 
     Q quiver(node_count, edge_count, input_indptr.data_ptr<T>(), input_indices.data_ptr<T>());

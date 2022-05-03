@@ -10,6 +10,7 @@ import itertools
 import time
 import quiver
 import quiver.utils as quiver_utils
+from quiver.shard_node import ShardNode
 
 
 T_co = TypeVar('T_co', covariant=True)
@@ -56,6 +57,7 @@ class GraphSageSampler:
                  csr_topo: quiver_utils.CSRTopo,
                  sizes: List[int],
                  device = 0,
+                 device_cache_size = 0,
                  mode="UVA"):
 
         assert mode in ["UVA",
@@ -67,12 +69,19 @@ class GraphSageSampler:
         self.quiver = None
         self.csr_topo = csr_topo
         self.mode = mode
+        self.device_cache_size = device_cache_size
         if self.mode in ["GPU", "UVA"] and device is not _FakeDevice and  device >= 0:
             edge_id = torch.zeros(1, dtype=torch.long)
-            self.quiver = qv.device_quiver_from_csr_array(self.csr_topo.indptr,
-                                                       self.csr_topo.indices,
-                                                       edge_id, device,
-                                                       self.mode != "UVA")
+            cache_memory_budget = quiver_utils.parse_size(self.device_cache_size)
+            self.shard_node = ShardNode(device, cache_memory_budget)
+            self.shard_node.device_quiver_from_csr_array(self.csr_topo.indptr,
+                                                         self.csr_topo.indices,
+                                                         edge_id, device,
+                                                         cache_memory_budget)
+            # self.quiver = qv.device_quiver_from_csr_array(self.csr_topo.indptr,
+            #                                            self.csr_topo.indices,
+            #                                            edge_id, device,
+            #                                            self.mode != "UVA", cache_memory_budget)
         elif self.mode == "CPU" and device is not _FakeDevice:
             self.quiver = qv.cpu_quiver_from_csr_array(self.csr_topo.indptr, self.csr_topo.indices)
             device = "cpu"
@@ -89,7 +98,8 @@ class GraphSageSampler:
         n_id = batch.to(self.device)
         size = size if size != -1 else self.csr_topo.node_count
         if self.mode in ["GPU", "UVA"]:
-            n_id, count = self.quiver.sample_neighbor(0, n_id, size)
+            n_id, count = self.shard_node.sample_neighbor(0, n_id, size)
+            # n_id, count = self.quiver.sample_neighbor(0, n_id, size)
         else:
             n_id, count = self.quiver.sample_neighbor(n_id, size)
             
@@ -97,7 +107,7 @@ class GraphSageSampler:
 
     def lazy_init_quiver(self):
 
-        if self.quiver is not None:
+        if self.quiver is not None or self.shard_node is not None:
             return
 
         self.device = "cpu" if self.mode == "CPU" else torch.cuda.current_device()
@@ -107,13 +117,20 @@ class GraphSageSampler:
             self.quiver = qv.cpu_quiver_from_csr_array(self.csr_topo.indptr, self.csr_topo.indices)
         else:
             edge_id = torch.zeros(1, dtype=torch.long)
-            self.quiver = qv.device_quiver_from_csr_array(self.csr_topo.indptr,
-                                                       self.csr_topo.indices,
-                                                       edge_id, self.device,
-                                                       self.mode != "UVA")
+            cache_memory_budget = quiver_utils.parse_size(self.device_cache_size)
+            self.shard_node = ShardNode(self.device, cache_memory_budget)
+            self.shard_node.device_quiver_from_csr_array(self.csr_topo.indptr,
+                                                         self.csr_topo.indices,
+                                                         edge_id, self.device,
+                                                         cache_memory_budget)
+            # self.quiver = qv.device_quiver_from_csr_array(self.csr_topo.indptr,
+            #                                            self.csr_topo.indices,
+            #                                            edge_id, self.device,
+            #                                            self.mode != "UVA", cache_memory_budget)
 
     def reindex(self, inputs, outputs, counts):
-        return self.quiver.reindex_single(inputs, outputs, counts)
+        return qv.reindex_single(inputs, outputs, counts)
+        # return self.quiver.reindex_single(inputs, outputs, counts)
 
     def sample(self, input_nodes):
         """Sample k-hop neighbors from input_nodes
@@ -131,6 +148,9 @@ class GraphSageSampler:
 
         batch_size = len(nodes)
         for size in self.sizes:
+            # frontier 指的是实际采样到的节点
+            # out 指的是最终采样到的节点
+            # 因为有可能邻居节点数量不够，需要进行填充，所以进行了一个区分
             out, cnt = self.sample_layer(nodes, size)
             frontier, row_idx, col_idx = self.reindex(nodes, out, cnt)
             row_idx, col_idx = col_idx, row_idx
@@ -197,6 +217,7 @@ class SampleJob(Generic[T_co]):
 
 def cpu_sampler_worker_loop(rank, quiver_sampler, task_queue, result_queue):
     while True:
+        # 如果 task_queue 中为空，这个 get 应该是会阻塞的
         task = task_queue.get()
         if task is _StopWork:
             result_queue.put(_StopWork)
@@ -304,6 +325,7 @@ class MixedGraphSageSampler:
         self.device_quiver = GraphSageSampler(self.csr_topo, self.sizes, device=self.device, mode="GPU" if "GPU" in self.mode else "UVA")
         self.cpu_quiver = GraphSageSampler(self.csr_topo, self.sizes, mode="CPU")
         self.result_queue = mp.Queue()
+        # num_workers 指定 cpu 线程数，每一个线程都会有一个 task
         for worker_id in range(self.num_workers):
             task_queue = mp.Queue()
             child_process = mp.Process(target=cpu_sampler_worker_loop,
@@ -319,12 +341,14 @@ class MixedGraphSageSampler:
 
             while True:
                 self.decide_task_num()
+                # 将任务放到 queue 中，供 cpu 执行
                 self.assign_cpu_tasks()
                 while self.device_task_remain > 0:
                     sample_start = time.time()
+                    # 没有需要进行采样的 sample_job
                     if self.current_task_id >= len(self.sample_job):
                         break
-                    
+                    # gpu 进行采样
                     res = self.device_quiver.sample(self.sample_job[self.current_task_id])
                     sample_end = time.time()
 

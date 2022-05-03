@@ -154,7 +154,7 @@ class ShardTensor
             inited_ = true;
         }
         tensor_shapes_.push_back(get_tensor_shape(tensor));
-
+        // offset_list_ 存储每一个 tensor 之间的间距是多少
         offset_list_.push_back(offset_list_[offset_list_.size() - 1] +
                                tensor.sizes()[0]);
 
@@ -205,14 +205,20 @@ class ShardTensor
     std::tuple<float **, int64_t *, int *> get_device_pointers(int device)
     {
         auto iter = device_pointers_map.find(device);
+        // bool tmp = (iter == device_pointers_map.end());
         if (iter == device_pointers_map.end()) {
             float **buffers_device;
             int64_t *offset_device;
             int *access_book_device;
 
-            // Copy buffers Device
+            // std::cout << "log >> " << "dev_ptrs_ " << dev_ptrs_[0] << std::endl;
+            for (int i = 0; i < dev_ptrs_.size(); i++) {
+                std::cout << "LOG >>>   dev_ptrs_" << dev_ptrs_[i] << std::endl;
+            }
             cudaMalloc((void ***)&buffers_device,
                        sizeof(float *) * device_count_);
+            // cudaMemcpy 会把 dev_ptrs 这整个数组给复制到 buffers_device 里面
+            // 因此之后的核函数也就有了 cpu 内存相关的数据指针了
             cudaMemcpy(buffers_device, &dev_ptrs_[0],
                        sizeof(float *) * dev_ptrs_.size(),
                        cudaMemcpyHostToDevice);
@@ -250,6 +256,7 @@ class ShardTensor
         */
         int current_device = 0;
         cudaGetDevice(&current_device);
+        // std::cout << "log >> " << "current_device " << current_device << std::endl;
         auto stream = at::cuda::getCurrentCUDAStream();
 
         std::vector<int64_t> res_shape(shape_);
@@ -272,22 +279,27 @@ class ShardTensor
         int *access_book_device;
 
         auto val = get_device_pointers(current_device);
+
         buffers_device = std::get<0>(val);
         offset_device = std::get<1>(val);
         access_book_device = std::get<2>(val);
-
+        // std::cout << "log" << buffers_device << " " << offset_device << " " << access_book_device << std::endl;
         int blockSize = 0;
         int numBlocks = 0;
+        // 获取 gpu 中的一些处理参数，用于之后调用核函数
         cudaOccupancyMaxPotentialBlockSize(&numBlocks, &blockSize,
                                            quiver_tensor_gather);
-        // std::cout<<"LOG >>> "<<" numBlocks "<< numBlocks <<" blockSize
-        // "<<blockSize<<std::endl;
+
         int ignore_access_book = 0;
-        if (current_device != device_) { ignore_access_book = 1; }
+        if (current_device != device_) { 
+            ignore_access_book = 1; 
+        }
+        // 使用 quiver_tensor_gather 获取到 gpu 中的数据
         quiver_tensor_gather<<<numBlocks, blockSize, 0, stream>>>(
             buffers_device, offset_device, offset_list_.size(),
             indices.data_ptr<int64_t>(), indices.numel(), res.data_ptr<float>(),
             stride(0), access_book_device, ignore_access_book);
+
         cudaCheckError();
         return res;
     }
