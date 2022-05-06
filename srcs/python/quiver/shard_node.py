@@ -1,4 +1,3 @@
-from numpy import append
 import torch_quiver as torch_qv
 import torch
 # import shard_node as sn

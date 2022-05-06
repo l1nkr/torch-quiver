@@ -27,7 +27,7 @@ train_idx = data.train_mask.nonzero(as_tuple=False).view(-1)
 # 从 train_idx 中每次抽出batch size个样本
 train_loader = torch.utils.data.DataLoader(train_idx,
                                            batch_size=1024,
-                                           shuffle=True,
+                                           shuffle=False,
                                            drop_last=True) # Quiver
 csr_topo = quiver.CSRTopo(data.edge_index) # Quiver
 

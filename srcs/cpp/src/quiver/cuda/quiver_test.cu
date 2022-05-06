@@ -34,7 +34,91 @@ namespace quiver{
     }
 
 #define CHECK_CPU(x) AT_ASSERTM(!x.device().is_cuda(), #x " must be CPU tensor")
+// CSRRowWiseSampleKernel<T, BLOCK_WARPS, TILE_SIZE>
+//     <<<grid, block, 0, stream>>>(
+//         0, k, inputs_size, gpu_memory_budget_,
+//         inputs, indptr_device_map_, cpu_part, gpu_part,
+//         output_ptr, output_counts, outputs, output_idx);
 
+// 核心就在于这个 kernel ，只要这个函数能够支持从 dev_indices_ 中读取数据
+// 分配内存这个问题就基本解决了，接下来就只需要想办法编译通过就可以了
+template <typename T, int BLOCK_WARPS, int TILE_SIZE>
+__global__ void CSRRowWiseSampleKernel(
+    const uint64_t rand_seed, int num_picks, const int64_t num_rows, int gpu_memory_budget,
+    const T * const in_rows, const T * const in_ptr, const T * const cpu_part, const T * const gpu_part,
+    T * const out_ptr, T * const out_count_ptr, T * const out, T * const out_idxs)
+{
+    assert(blockDim.x == WARP_SIZE);
+    assert(blockDim.y == BLOCK_WARPS);
+
+    int64_t out_row = blockIdx.x * TILE_SIZE + threadIdx.y;
+
+    const int64_t last_row = min(static_cast<int64_t>(blockIdx.x + 1) * TILE_SIZE, num_rows);
+
+    curandState rng;
+    curand_init(rand_seed * gridDim.x + blockIdx.x,
+                threadIdx.y * WARP_SIZE + threadIdx.x, 0, &rng);
+    while (out_row < last_row) {
+        const int64_t row = in_rows[out_row];
+        // row：需要采样节点的序号
+        const int64_t in_row_start = in_ptr[row];
+        // degree?
+        const int64_t deg = in_ptr[row + 1] - in_row_start;
+        const int64_t out_row_start = out_ptr[out_row];
+        if (deg <= num_picks) {
+            // 邻居节点个数小于要求的节点数量
+            // just copy row
+            for (int idx = threadIdx.x; idx < deg; idx += WARP_SIZE) {
+                const T in_idx = in_row_start + idx;
+                // in_index[in_ptr[in_rows[blockIdx.x * TILE_SIZE + threadIdx.y]] + idx]
+                // 依据 thread id 和 memory budget 就可以算出使用哪一个指针
+                // in_ptr[in_rows[blockIdx.x * TILE_SIZE + threadIdx.y]] + idx > gpu_memory_budget 
+                //      then use cpu
+                //      else use gpu
+                if (in_idx > gpu_memory_budget) {
+                    out[out_row_start + idx] = cpu_part[in_idx - gpu_memory_budget];
+                } else {
+                    out[out_row_start + idx] = gpu_part[in_idx];
+                }
+                // out[out_row_start + idx] = in_index[in_idx];
+            }
+        } else {
+            // 邻居节点个数大于要求的节点数量，随机采样
+            // generate permutation list via reservoir algorithm
+            for (int idx = threadIdx.x; idx < num_picks; idx += WARP_SIZE) {
+                out_idxs[out_row_start + idx] = idx;
+            }
+            __syncwarp();
+            // 使用水库算法从邻居节点中采样 num_picks 个节点
+            for (int idx = num_picks + threadIdx.x; idx < deg; idx += WARP_SIZE) {
+                const int num = curand(&rng) % (idx + 1);
+                if (num < num_picks) {
+                    // use max so as to achieve the replacement order the serial algorithm would have
+                    using Type = unsigned long long int;
+                    // out_idxs[out_row_start + num] = max(out_idxs[out_row_start + num], idx)
+                    atomicMax(reinterpret_cast<Type *>(out_idxs + out_row_start + num),
+                              static_cast<Type>(idx));
+                }
+            }
+            __syncwarp();
+            // copy permutation over
+            for (int idx = threadIdx.x; idx < num_picks; idx += WARP_SIZE) {
+                const T perm_idx = out_idxs[out_row_start + idx] + in_row_start;
+                // in_index[out_idxs[out_ptr[blockIdx.x * TILE_SIZE + threadIdx.y] + idx] + in_ptr[row]]
+                // if (out_idxs[out_ptr[blockIdx.x * TILE_SIZE + threadIdx.y] + idx] + in_ptr[row] > gpu_memory_budget) 
+                //      then use cpu
+                //      else use gpu 
+                if (perm_idx > gpu_memory_budget) {
+                    out[out_row_start + idx] = cpu_part[perm_idx - gpu_memory_budget];
+                } else {
+                    out[out_row_start + idx] = gpu_part[perm_idx];
+                }
+                // out[out_row_start + idx] = in_index[perm_idx];
+            }
+        }
+        out_row += BLOCK_WARPS;
+    }
+}
 
 // 因此 ShardNode 应该具有如下方法：
 // device_quiver_from_csr_array, sample_neighbor, reindex_single
@@ -75,14 +159,14 @@ public:
         if (target_device >= 0) {
             cudaSetDevice(target_device);
             cudaMalloc(&ptr, data_size);
-            cudaMemcpy(ptr, tensor.data_ptr<int>(), data_size,
+            cudaMemcpy(ptr, tensor.data_ptr<int64_t>(), data_size,
                         cudaMemcpyHostToDevice);
             cudaSetDevice(device_);
         } else {
             cudaSetDevice(device_);
-            quiverRegister(tensor.data_ptr<int>(), data_size,
+            quiverRegister(tensor.data_ptr<int64_t>(), data_size,
                             cudaHostRegisterMapped);
-            cudaHostGetDevicePointer(&ptr, (void *)tensor.data_ptr<int>(), 0);
+            cudaHostGetDevicePointer(&ptr, (void *)tensor.data_ptr<int64_t>(), 0);
         }
         dev_indices_.push_back((T *)ptr);
     }
@@ -151,12 +235,12 @@ public:
             cpu_part = nullptr;
         }
         
-        // std::vector<T *> dev_indices_; // column
-        // CSRRowWiseSampleKernel<T, BLOCK_WARPS, TILE_SIZE>
-        //     <<<grid, block, 0, stream>>>(
-        //         0, k, inputs_size, gpu_memory_budget_,
-        //         inputs, indptr_device_map_, cpu_part, gpu_part,
-        //         output_ptr, output_counts, outputs, output_idx);
+        std::vector<T *> dev_indices_; // column
+        CSRRowWiseSampleKernel<T, BLOCK_WARPS, TILE_SIZE>
+            <<<grid, block, 0, stream>>>(
+                0, k, inputs_size, gpu_memory_budget_,
+                inputs, indptr_device_map_, cpu_part, gpu_part,
+                output_ptr, output_counts, outputs, output_idx);
             
     }
 
@@ -276,91 +360,7 @@ __host__ ShardNode new_node_from_csr_array(torch::Tensor &input_indptr,
     return ShardNode(indptr_device_pointer, edge_id_device_pointer,
                      node_count, edge_count, gpu_memory_budget, 0, 4);
 }
-// CSRRowWiseSampleKernel<T, BLOCK_WARPS, TILE_SIZE>
-//     <<<grid, block, 0, stream>>>(
-//         0, k, inputs_size, gpu_memory_budget_,
-//         inputs, indptr_device_map_, cpu_part, gpu_part,
-//         output_ptr, output_counts, outputs, output_idx);
 
-// 核心就在于这个 kernel ，只要这个函数能够支持从 dev_indices_ 中读取数据
-// 分配内存这个问题就基本解决了，接下来就只需要想办法编译通过就可以了
-template <typename T, int BLOCK_WARPS, int TILE_SIZE>
-__global__ void CSRRowWiseSampleKernel(
-    const uint64_t rand_seed, int num_picks, const int64_t num_rows, int gpu_memory_budget,
-    const T * const in_rows, const T * const in_ptr, const T * const cpu_part, const T * const gpu_part,
-    T * const out_ptr, T * const out_count_ptr, T * const out, T * const out_idxs)
-{
-    assert(blockDim.x == WARP_SIZE);
-    assert(blockDim.y == BLOCK_WARPS);
-
-    int64_t out_row = blockIdx.x * TILE_SIZE + threadIdx.y;
-
-    const int64_t last_row = min(static_cast<int64_t>(blockIdx.x + 1) * TILE_SIZE, num_rows);
-
-    curandState rng;
-    curand_init(rand_seed * gridDim.x + blockIdx.x,
-                threadIdx.y * WARP_SIZE + threadIdx.x, 0, &rng);
-    while (out_row < last_row) {
-        const int64_t row = in_rows[out_row];
-        // row：需要采样节点的序号
-        const int64_t in_row_start = in_ptr[row];
-        // degree?
-        const int64_t deg = in_ptr[row + 1] - in_row_start;
-        const int64_t out_row_start = out_ptr[out_row];
-        if (deg <= num_picks) {
-            // 邻居节点个数小于要求的节点数量
-            // just copy row
-            for (int idx = threadIdx.x; idx < deg; idx += WARP_SIZE) {
-                const T in_idx = in_row_start + idx;
-                // in_index[in_ptr[in_rows[blockIdx.x * TILE_SIZE + threadIdx.y]] + idx]
-                // 依据 thread id 和 memory budget 就可以算出使用哪一个指针
-                // in_ptr[in_rows[blockIdx.x * TILE_SIZE + threadIdx.y]] + idx > gpu_memory_budget 
-                //      then use cpu
-                //      else use gpu
-                if (in_idx > gpu_memory_budget) {
-                    out[out_row_start + idx] = cpu_part[in_idx - gpu_memory_budget];
-                } else {
-                    out[out_row_start + idx] = gpu_part[in_idx];
-                }
-                // out[out_row_start + idx] = in_index[in_idx];
-            }
-        } else {
-            // 邻居节点个数大于要求的节点数量，随机采样
-            // generate permutation list via reservoir algorithm
-            for (int idx = threadIdx.x; idx < num_picks; idx += WARP_SIZE) {
-                out_idxs[out_row_start + idx] = idx;
-            }
-            __syncwarp();
-            // 使用水库算法从邻居节点中采样 num_picks 个节点
-            for (int idx = num_picks + threadIdx.x; idx < deg; idx += WARP_SIZE) {
-                const int num = curand(&rng) % (idx + 1);
-                if (num < num_picks) {
-                    // use max so as to achieve the replacement order the serial algorithm would have
-                    using Type = unsigned long long int;
-                    // out_idxs[out_row_start + num] = max(out_idxs[out_row_start + num], idx)
-                    atomicMax(reinterpret_cast<Type *>(out_idxs + out_row_start + num),
-                              static_cast<Type>(idx));
-                }
-            }
-            __syncwarp();
-            // copy permutation over
-            for (int idx = threadIdx.x; idx < num_picks; idx += WARP_SIZE) {
-                const T perm_idx = out_idxs[out_row_start + idx] + in_row_start;
-                // in_index[out_idxs[out_ptr[blockIdx.x * TILE_SIZE + threadIdx.y] + idx] + in_ptr[row]]
-                // if (out_idxs[out_ptr[blockIdx.x * TILE_SIZE + threadIdx.y] + idx] + in_ptr[row] > gpu_memory_budget) 
-                //      then use cpu
-                //      else use gpu 
-                if (perm_idx > gpu_memory_budget) {
-                    out[out_row_start + idx] = cpu_part[perm_idx - gpu_memory_budget];
-                } else {
-                    out[out_row_start + idx] = gpu_part[perm_idx];
-                }
-                // out[out_row_start + idx] = in_index[perm_idx];
-            }
-        }
-        out_row += BLOCK_WARPS;
-    }
-}
 }   
 // namespace quiver
 // // 核心就在于这个 kernel ，只要这个函数能够支持从 dev_indices_ 中读取数据
