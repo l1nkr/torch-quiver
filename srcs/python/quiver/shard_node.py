@@ -54,9 +54,9 @@ class ShardNode:
         # 分配 indices 内存
         gpu_part, self.cpu_part = self.partition(indices, memory_budget)
         if gpu_part.shape[0] > 0:
-            append(gpu_part, device)
+            self.append(gpu_part, device)
         if self.cpu_part.numel() > 0:
-            append(self.cpu_part, -1)
+            self.append(self.cpu_part, -1)
         
             
 

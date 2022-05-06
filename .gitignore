@@ -1,5 +1,5 @@
-/examples
-/build
+examples/data/
+build/
 /**/*.egg-info/
 /**/__pycache__/
 
