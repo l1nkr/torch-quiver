@@ -5,7 +5,7 @@ set -e
 
 CUDA_HOME=/home/lf/cuda10.2
 # CUDA_HOME=/usr/local/cuda
-CUDA_ARCHITECTURES="61" # FIXME: detect
+CUDA_ARCHITECTURES="75" # FIXME: detect
 
 HAVE_CUDA=0
 if [ -f $CUDA_HOME/include/cuda_runtime.h ]; then

@@ -55,7 +55,7 @@ def create_extension(with_cuda=False):
         with_cuda=with_cuda,
         extra_compile_args={
             'cxx': extra_cxx_flags,
-            'nvcc': ['-O3', '--expt-extended-lambda', '-lnuma'],
+            'nvcc': ['-O3', '--expt-extended-lambda', '-lnuma', '-arch=compute_75', '-code=sm_75'],
         },
     )
 

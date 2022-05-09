@@ -44,7 +44,7 @@ class ShardNode:
         
     def partition(self, indices: torch.Tensor, memory_budget: int):
         # 计算出有多少内存在 cpu gpu 中
-        cache_size = memory_budget // 4
+        cache_size = memory_budget // 8
         return [indices[:cache_size], indices[cache_size:]]
 
     def device_quiver_from_csr_array(self, indptr, indices, edge_idx, device, memory_budget):

@@ -70,16 +70,20 @@ __global__ void CSRRowWiseSampleKernel(
             // just copy row
             for (int idx = threadIdx.x; idx < deg; idx += WARP_SIZE) {
                 const T in_idx = in_row_start + idx;
-                // in_index[in_ptr[in_rows[blockIdx.x * TILE_SIZE + threadIdx.y]] + idx]
+                // in_idx = in_ptr[in_rows[blockIdx.x * TILE_SIZE + threadIdx.y]] + idx
                 // 依据 thread id 和 memory budget 就可以算出使用哪一个指针
                 // in_ptr[in_rows[blockIdx.x * TILE_SIZE + threadIdx.y]] + idx > gpu_memory_budget 
                 //      then use cpu
                 //      else use gpu
-                if (in_idx > gpu_memory_budget) {
-                    out[out_row_start + idx] = cpu_part[in_idx - gpu_memory_budget];
+                // printf("11\n");
+                if (in_idx > gpu_memory_budget / 8) {
+                    // printf("log >> cpu %d \n", in_idx);
+                    out[out_row_start + idx] = cpu_part[in_idx - gpu_memory_budget / 8];
                 } else {
+                    // printf("log >> gpu %d \n", in_idx);
                     out[out_row_start + idx] = gpu_part[in_idx];
                 }
+                // printf("22\n");
                 // out[out_row_start + idx] = in_index[in_idx];
             }
         } else {
@@ -108,11 +112,15 @@ __global__ void CSRRowWiseSampleKernel(
                 // if (out_idxs[out_ptr[blockIdx.x * TILE_SIZE + threadIdx.y] + idx] + in_ptr[row] > gpu_memory_budget) 
                 //      then use cpu
                 //      else use gpu 
-                if (perm_idx > gpu_memory_budget) {
-                    out[out_row_start + idx] = cpu_part[perm_idx - gpu_memory_budget];
+                // printf("33\n");
+                if (perm_idx > gpu_memory_budget / 8) {
+                    // printf("log >> cpu %d \n", perm_idx);
+                    out[out_row_start + idx] = cpu_part[perm_idx - gpu_memory_budget / 8];
                 } else {
+                    // printf("log >> gpu %d \n", perm_idx);
                     out[out_row_start + idx] = gpu_part[perm_idx];
                 }
+                // printf("44\n");
                 // out[out_row_start + idx] = in_index[perm_idx];
             }
         }
@@ -155,7 +163,11 @@ public:
     {
         CHECK_CPU(tensor);
         void *ptr = NULL;
-        size_t data_size = get_tensor_bytes(tensor);
+        // size_t data_size = get_tensor_bytes(tensor);
+        size_t data_size = 8 * tensor.size(0);
+        // std::cout << tensor.dim() << std::endl;
+        // std::cout << tensor.size(0) << std::endl;
+        // std::cout << "data_size " << data_size << std::endl;
         if (target_device >= 0) {
             cudaSetDevice(target_device);
             cudaMalloc(&ptr, data_size);
@@ -182,9 +194,9 @@ public:
         thrust::device_vector<T> inputs;
         thrust::device_vector<T> outputs;
         thrust::device_vector<T> output_counts;
-
+// std::cout << "1" << std::endl;
         sample_kernel(stream, vertices, k, inputs, outputs, output_counts);
-
+// std::cout << "2" << std::endl;
         torch::Tensor neighbors = torch::empty(outputs.size(), vertices.options());
         torch::Tensor counts = torch::empty(vertices.size(0), vertices.options());
 
@@ -223,19 +235,24 @@ public:
         const T *cpu_part;
         if (dev_indices_.size() > 1) {
             // budget 适中。两者都有
+            // std::cout << "mid" << std::endl;
             gpu_part = dev_indices_[0];
             cpu_part = dev_indices_[1];
         } else if (gpu_memory_budget_ == 0) {
             // budget 为0， gpu 为空
+            // std::cout << "zero" << std::endl;
             gpu_part = nullptr;
             cpu_part = dev_indices_[0];
         } else {
             // budget 很大，cpu 为空
+            // std::cout << "full" << std::endl;
             gpu_part = dev_indices_[0];
             cpu_part = nullptr;
         }
-        
-        std::vector<T *> dev_indices_; // column
+        // std::cout << "gpu_part" << gpu_part << std::endl;
+        // std::cout << "cpu_part" << cpu_part << std::endl;
+// std::cout << "5" << std::endl;
+        // std::vector<T *> dev_indices_; // column
         CSRRowWiseSampleKernel<T, BLOCK_WARPS, TILE_SIZE>
             <<<grid, block, 0, stream>>>(
                 0, k, inputs_size, gpu_memory_budget_,
@@ -260,6 +277,7 @@ public:
 
         TRACE_SCOPE("prepare");
         const T *vertices_ptr = vertices.data_ptr<T>();
+// std::cout << "3" << std::endl;
         thrust::copy(vertices_ptr, vertices_ptr + bs, inputs.begin());
         // 1. 这里并没有 quiver_ 这个对象
         // 2. 即使有，也不能直接拿来用，因为我们的参数已经发生了变化
@@ -286,7 +304,7 @@ public:
         output_idx.resize(tot);
 
         TRACE_SCOPE("sample");
-
+// std::cout << "4" << std::endl;
         new_sample(stream, k,
                    thrust::raw_pointer_cast(inputs.data()), inputs.size(),
                    thrust::raw_pointer_cast(output_ptr.data()),
