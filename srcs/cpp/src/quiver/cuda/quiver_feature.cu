@@ -33,24 +33,6 @@ class ShardTensorItem
     ShardTensorItem(){
 
     };
-    // std::tuple<int, py::bytes, std::vector<int>> share_ipc()
-    // {
-    //     auto _handle = PyBytes_FromStringAndSize((char *)&mem_handle,
-    //                                              CUDA_IPC_HANDLE_SIZE);
-    //     auto bytes_obj = py::reinterpret_steal<py::object>((PyObject *)_handle);
-    //     return std::make_tuple(device, bytes_obj, shape);
-    // }
-    // void from_ipc(std::tuple<int, std::string, std::vector<int>> ipc_data)
-    // {
-
-    //     device = std::get<0>(ipc_data);
-    //     shape = std::get<2>(ipc_data);
-    //     auto handle = std::get<1>(ipc_data);
-    //     auto ipc_handle =
-    //         reinterpret_cast<const cudaIpcMemHandle_t *>(handle.c_str());
-
-    //     mem_handle = *ipc_handle;
-    // }
 
 };
 
@@ -179,12 +161,8 @@ class ShardTensor
             cudaDeviceCanAccessPeer(&access_j_i, target_device, device_);
             if ((access_i_j && access_j_i) || device_ == target_device) {
                 access_book.push_back(1);
-                // printf("%d <-> %d support peer access \n", device_,
-                // target_device);
             } else {
                 access_book.push_back(0);
-                // printf("%d <-> %d dont support peer access \n", device_,
-                // target_device);
             }
 
         } else {
@@ -194,7 +172,6 @@ class ShardTensor
                            cudaHostRegisterMapped);
             cudaHostGetDevicePointer(&ptr, (void *)tensor.data_ptr<float>(), 0);
             access_book.push_back(1);
-            // printf("%d <-> CPU support peer access \n", device_);
         }
 
         dev_ptrs_.push_back((float *)ptr);
@@ -212,10 +189,6 @@ class ShardTensor
             int64_t *offset_device;
             int *access_book_device;
 
-            // std::cout << "log >> " << "dev_ptrs_ " << dev_ptrs_[0] << std::endl;
-            for (int i = 0; i < dev_ptrs_.size(); i++) {
-                std::cout << "LOG >>>   dev_ptrs_" << dev_ptrs_[i] << std::endl;
-            }
             cudaMalloc((void ***)&buffers_device,
                        sizeof(float *) * device_count_);
             // cudaMemcpy 会把 dev_ptrs 这整个数组给复制到 buffers_device 里面
@@ -257,7 +230,6 @@ class ShardTensor
         */
         int current_device = 0;
         cudaGetDevice(&current_device);
-        // std::cout << "log >> " << "current_device " << current_device << std::endl;
         auto stream = at::cuda::getCurrentCUDAStream();
 
         std::vector<int64_t> res_shape(shape_);
@@ -284,7 +256,6 @@ class ShardTensor
         buffers_device = std::get<0>(val);
         offset_device = std::get<1>(val);
         access_book_device = std::get<2>(val);
-        // std::cout << "log" << buffers_device << " " << offset_device << " " << access_book_device << std::endl;
         int blockSize = 0;
         int numBlocks = 0;
         // 获取 gpu 中的一些处理参数，用于之后调用核函数
@@ -332,21 +303,6 @@ class ShardTensor
         }
         return res;
     }
-    // std::vector<ShardTensorItem> share_ipc()
-    // {
-    //     std::vector<ShardTensorItem> res;
-    //     for (int index = 0; index < dev_ptrs_.size(); index++) {
-    //         if (tensor_devices_[index] >= 0) {
-    //             cudaSetDevice(tensor_devices_[index]);
-    //             ShardTensorItem *item = new ShardTensorItem();
-    //             item->device = tensor_devices_[index];
-    //             item->shape = tensor_shapes_[index];
-    //             cudaIpcGetMemHandle(&(item->mem_handle), dev_ptrs_[index]);
-    //             res.push_back(*item);
-    //         }
-    //     }
-    //     return res;
-    // }
 
     int device_count() const { return device_count_; }
 
@@ -373,50 +329,6 @@ class ShardTensor
     bool inited_;
 };
 
-// void init_p2p(std::vector<int> devices)
-// {
-//     std::cout << "LOG>>> P2P Access Initilization" << std::endl;
-
-//     for (int i = 0; i < devices.size(); i++) {
-//         int src = devices[i];
-//         cudaSetDevice(src);
-//         cudaDeviceProp prop;
-//         cudaGetDeviceProperties(&prop, src);
-
-//         // CUDA IPC is only supported on devices with unified addressing
-//         if (!prop.unifiedAddressing) {
-//             printf(
-//                 "Device %d does not support unified addressing, skipping...\n",
-//                 i);
-//             continue;
-//         }
-//         // This sample requires two processes accessing each device, so we need
-//         // to ensure exclusive or prohibited mode is not set
-//         if (prop.computeMode != cudaComputeModeDefault) {
-//             printf(
-//                 "Device %d is in an unsupported compute mode for this sample\n",
-//                 i);
-//             continue;
-//         }
-
-//         for (int j = i + 1; j < devices.size(); j++) {
-//             int dst = devices[j];
-//             int access_i_j = 0;
-//             int access_j_i = 0;
-//             cudaDeviceCanAccessPeer(&access_i_j, src, dst);
-//             cudaDeviceCanAccessPeer(&access_j_i, dst, src);
-//             if (access_i_j && access_j_i) {
-//                 printf("Enable P2P Access Between %d <---> %d \n", src, dst);
-//                 cudaSetDevice(src);
-//                 cudaDeviceEnablePeerAccess(dst, 0);
-//                 cudaCheckError();
-//                 cudaSetDevice(dst);
-//                 cudaDeviceEnablePeerAccess(src, 0);
-//                 cudaCheckError();
-//             }
-//         }
-//     }
-// }
 bool can_device_access_peer(int src_device_index, int dst_device_index)
 {
     int access_i_j = 0, access_j_i = 0;

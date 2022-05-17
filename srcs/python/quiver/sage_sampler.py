@@ -166,23 +166,4 @@ class GraphSageSampler:
             last_prob = cur_prob
         return last_prob
 
-    def share_ipc(self):
-        """Create ipc handle for multiprocessing
 
-        Returns:
-            tuple: ipc handle tuple
-        """
-        return self.csr_topo, self.sizes, self.mode
-
-    @classmethod
-    def lazy_from_ipc_handle(cls, ipc_handle):
-        """Create from ipc handle
-
-        Args:
-            ipc_handle (tuple): ipc handle got from calling `share_ipc`
-
-        Returns:
-            quiver.pyg.GraphSageSampler: Sampler created from ipc handle
-        """
-        csr_topo, sizes, mode = ipc_handle
-        return cls(csr_topo, sizes, _FakeDevice, mode)

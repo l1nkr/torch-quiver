@@ -107,21 +107,6 @@ class ShardTensor:
             )
             del tensor
 
-    def collect_device(self, input_orders, nodes, inter_device, wait_results):
-
-        request_nodes_mask = (
-            nodes >=
-            self.shard_tensor_config.tensor_offset_device[inter_device].start
-        ) & (nodes <
-             self.shard_tensor_config.tensor_offset_device[inter_device].end)
-        request_nodes = torch.masked_select(nodes, request_nodes_mask)
-        part_orders = torch.masked_select(input_orders, request_nodes_mask)
-        request_nodes = request_nodes.to(inter_device)
-
-        with torch.cuda.device(inter_device):
-            result = self.shard_tensor[request_nodes]
-        result = result.to(self.current_device)
-        wait_results.append((part_orders, result))
 
     def __getitem__(self, nodes):
         nodes = nodes.to(self.current_device)

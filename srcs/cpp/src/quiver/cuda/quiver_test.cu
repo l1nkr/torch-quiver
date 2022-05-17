@@ -270,7 +270,8 @@ public:
                   thrust::device_vector<T> &outputs,
                   thrust::device_vector<T> &output_counts) const
     {
-        
+        // thrust 这库是用来进行 cuda 高性能并行编程的
+        // reference: https://docs.nvidia.com/cuda/thrust/index.html
         const auto policy = thrust::cuda::par.on(stream);
         const size_t bs = vertices.size(0);
         
@@ -281,24 +282,32 @@ public:
         TRACE_SCOPE("prepare");
         const T *vertices_ptr = vertices.data_ptr<T>();
 // std::cout << "3" << std::endl;
+        // 将需要进行采样的点复制到 input 中
         thrust::copy(vertices_ptr, vertices_ptr + bs, inputs.begin());
         // 1. 这里并没有 quiver_ 这个对象
         // 2. 即使有，也不能直接拿来用，因为我们的参数已经发生了变化
         // 3. 所以，需要自己重写这个方法
         // 已重写
+        // 将 input 中所有相邻节点进行相减，将结果存到 ouput_counts 中
         degree(stream, inputs.data(), inputs.data() + inputs.size(),
                output_counts.data());
         if (k >= 0) {
             // 这个函数不需要修改，没有涉及之前存入的数据
+            // output_counts 中是输入节点与相邻节点的间距
+            // cap_by 会返回 distance < k ? distance : k
             thrust::transform(policy, output_counts.begin(), output_counts.end(),
                               output_counts.begin(),
                               cap_by<T>(k)); 
         }
         thrust::device_vector<T> output_ptr;
         output_ptr.resize(bs);
+        // 不包含自己的前缀和
+        // 可以求出在这个节点之前需要采样多少个节点
         thrust::exclusive_scan(policy, output_counts.begin(), output_counts.end(),
                               output_ptr.begin());
         T tot = 0;
+        // reduce 依次进行求和
+        // 求出一共需要采样多少个节点
         tot = thrust::reduce(policy, output_counts.begin(), output_counts.end());
 
         TRACE_SCOPE("alloc_2");
@@ -308,6 +317,13 @@ public:
 
         TRACE_SCOPE("sample");
 // std::cout << "4" << std::endl;
+        // k 采样节点数 （25）
+        // inputs 需要进行采样的节点
+        // input_size = inputs.size()
+        // output_ptr 在这个节点之前需要采样多少个节点
+        // output_counts 对应 inputs 中每个节点需要采样多少个节点
+        // outputs 大小为总采样节点个数的空 vector，返回最终结果，需要扩散到哪些节点
+        // output_idx 大小为总采样节点个数的空 vector
         new_sample(stream, k,
                    thrust::raw_pointer_cast(inputs.data()), inputs.size(),
                    thrust::raw_pointer_cast(output_ptr.data()),
