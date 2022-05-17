@@ -1,5 +1,5 @@
 #include <quiver/algorithm.cu.hpp>
-#include <quiver/cuda_stream.hpp>
+#include <quiver/stream_pool.hpp>
 #include <thrust/device_vector.h>
 
 #include "testing.hpp"

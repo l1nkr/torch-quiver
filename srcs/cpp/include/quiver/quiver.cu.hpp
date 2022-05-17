@@ -1,7 +1,6 @@
 #pragma once
 #include <quiver/algorithm.cu.hpp>
 #include <quiver/common.hpp>
-#include <quiver/copy.cu.hpp>
 #include <quiver/cuda_random.cu.hpp>
 #include <quiver/functor.cu.hpp>
 #include <quiver/quiver.hpp>
@@ -198,20 +197,6 @@ class quiver<T, CUDA>
     {
     }
 
-    // quiver(thrust::device_vector<T> row_ptr, thrust::device_vector<T>
-    // col_idx,
-    //        thrust::device_vector<T> edge_idx,
-    //        thrust::device_vector<W> edge_weight,
-    //        thrust::device_vector<W> bucket_edge_weight)
-    //     : row_ptr_(std::move(row_ptr)),
-    //       col_idx_(std::move(col_idx)),
-    //       edge_idx_(std::move(edge_idx)),
-    //       edge_weight_(std::move(edge_weight)),
-    //       bucket_edge_weight_(std::move(bucket_edge_weight)),
-    //       opt_(true, !edge_idx.empty(), true),
-    //       quiver_mode(DMA)
-    // {
-    // }
     quiver(T *row_ptr, T *col_idx, T *edge_idx, T node_count, T edge_count)
         : row_ptr_mapped_(std::move(row_ptr)),
           col_idx_mapped_(std::move(col_idx)),
@@ -246,39 +231,6 @@ class quiver<T, CUDA>
         return self(row_ptr, col_idx, edge_idx);
     }
 
-    // static self New(T n, thrust::device_vector<T> row_idx,
-    //                 thrust::device_vector<T> col_idx,
-    //                 thrust::device_vector<T> edge_idx,
-    //                 thrust::device_vector<W> edge_weight)
-    // {
-    //     if (!edge_idx.empty()) {
-    //         thrust::device_vector<thrust::tuple<T, T, T, W>> edges(
-    //             row_idx.size());
-    //         zip(row_idx, col_idx, edge_idx, edge_weight, edges);
-    //         thrust::sort(edges.begin(), edges.end());
-    //         unzip(edges, row_idx, col_idx, edge_idx, edge_weight);
-    //     } else {
-    //         thrust::device_vector<thrust::tuple<T, T, W>>
-    //         edges(row_idx.size()); zip(row_idx, col_idx, edge_weight, edges);
-    //         thrust::sort(edges.begin(), edges.end());
-    //         unzip(edges, row_idx, col_idx, edge_weight);
-    //     }
-
-    //     thrust::device_vector<T> row_ptr(n);
-    //     thrust::device_vector<T> row_ptr_next(row_idx.size());
-    //     thrust::device_vector<W> bucket_edge_weight(row_idx.size());
-    //     thrust::sequence(row_ptr.begin(), row_ptr.end());
-    //     thrust::sequence(row_ptr_next.begin(), row_ptr_next.end());
-    //     thrust::lower_bound(row_idx.begin(), row_idx.end(), row_ptr.begin(),
-    //                         row_ptr.end(), row_ptr.begin());
-    //     thrust::upper_bound(row_idx.begin(), row_idx.end(),
-    //                         row_ptr_next.begin(), row_ptr_next.end(),
-    //                         row_ptr_next.begin());
-    //     bucket_weight(row_ptr, row_ptr_next, edge_weight,
-    //     bucket_edge_weight); return self(row_ptr, col_idx, edge_idx,
-    //     edge_weight,
-    //                 bucket_edge_weight);
-    // }
     static self New(T *row_idx, T *col_idx, T *edge_idx, T node_count,
                     T edge_count)
     {
@@ -452,29 +404,5 @@ class quiver<T, CUDA>
         }
     }
 
-#ifdef QUIVER_TEST
-    void get_edges(std::vector<T> &u, std::vector<T> &v) const
-    {
-        const auto row_ptr = from_device<T>(row_ptr_);
-        const auto col_idx = from_device<T>(col_idx_);
-
-        const int n = row_ptr.size();
-        const int m = col_idx.size();
-        u.clear();
-        v.clear();
-        u.reserve(m);
-        v.reserve(m);
-
-        get_adj_diff<T> count(thrust::raw_pointer_cast(row_ptr.data()), n, m);
-
-        for (int i = 0; i < n; ++i) {
-            const int c = count(i);
-            for (int j = 0; j < c; ++j) {
-                u.push_back(i);
-                v.push_back(col_idx[row_ptr.at(i) + j]);
-            }
-        }
-    }
-#endif
 };
 }  // namespace quiver

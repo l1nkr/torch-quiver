@@ -17,7 +17,7 @@
 #include <thrust/binary_search.h>
 #include <thrust/device_vector.h>
 #include <quiver/stream_pool.hpp>
-#include <quiver/cuda_stream.hpp>
+#include <quiver/stream_pool.hpp>
 #include <quiver/functor.cu.hpp>
 namespace quiver{
 

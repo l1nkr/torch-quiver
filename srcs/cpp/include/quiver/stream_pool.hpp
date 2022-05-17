@@ -1,10 +1,24 @@
 #pragma once
 #include <vector>
-
-#include <quiver/cuda_stream.hpp>
+#include <cuda_runtime.h>
+#include <iostream>
 
 namespace quiver
 {
+class cuda_stream
+{
+    cudaStream_t stream_;
+
+  public:
+    //   TODO: check errors
+
+    cuda_stream() { cudaStreamCreate(&stream_); }
+
+    ~cuda_stream() { cudaStreamDestroy(stream_); }
+
+    operator cudaStream_t() const { return stream_; }
+};
+
 class stream_pool
 {
     std::vector<cuda_stream> streams_;
