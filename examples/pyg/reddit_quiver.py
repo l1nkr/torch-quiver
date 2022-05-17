@@ -32,7 +32,8 @@ train_loader = torch.utils.data.DataLoader(train_idx,
 csr_topo = quiver.CSRTopo(data.edge_index) # Quiver
 
 # 注意这里仅仅是初始化了一个对象，并没有进行实际的采样
-quiver_sampler = quiver.pyg.GraphSageSampler(csr_topo, sizes=[25, 10], device=0, device_cache_size="0.1G", mode='GPU') # Quiver
+
+quiver_sampler = quiver.GraphSageSampler(csr_topo, sizes=[25, 10], device=0, device_cache_size="0.1G", mode='GPU') # Quiver
 
 
 subgraph_loader = NeighborSampler(data.edge_index, node_idx=None, sizes=[-1],
@@ -105,7 +106,7 @@ optimizer = torch.optim.Adam(model.parameters(), lr=0.01)
 
 # 依据 csr_topo 这个拓扑图，得到热点数据，这些数据应该是 hot data 所对应的 feature，然后决定哪部分放到 cpu 哪部分放到 gpu
 # x 是 Feature 这个类的一个对象
-x = quiver.Feature(rank=0, device_list=[0], device_cache_size="0.25G", cache_policy="device_replicate", csr_topo=csr_topo) # Quiver
+x = quiver.Feature(rank=0, device_list=[0], device_cache_size="0.25G", csr_topo=csr_topo) # Quiver
 
 # 把原先的数据分到 gpu 或者 cpu 上去（具体如何分，取决于之前传入的参数）
 # data.x 里面存的不是图的 topo，里面存的是节点的特征信息
@@ -170,7 +171,7 @@ def test():
     return results
 
 
-for epoch in range(1, 5):
+for epoch in range(1, 11):
     loss, acc = train(epoch)
     print(f'Epoch {epoch:02d}, Loss: {loss:.4f}, Approx. Train: {acc:.4f}')
     train_acc, val_acc, test_acc = test()

@@ -194,6 +194,9 @@ public:
         thrust::device_vector<T> inputs;
         thrust::device_vector<T> outputs;
         thrust::device_vector<T> output_counts;
+        // vertices 中是需要进行采样的节点
+        // k 是表示需要采样 target node 的多少个 nerghbors
+        // inputs outputs output_counts 都是用于返回值的
 // std::cout << "1" << std::endl;
         sample_kernel(stream, vertices, k, inputs, outputs, output_counts);
 // std::cout << "2" << std::endl;
@@ -202,7 +205,7 @@ public:
 
         thrust::copy(outputs.begin(), outputs.end(), neighbors.data_ptr<T>());
         thrust::copy(output_counts.begin(), output_counts.end(), counts.data_ptr<T>());
-
+        // neighbors 中的节点是 下一层需要继续进行扩散的节点。counts 中是每一个 target node 对多少个节点进行了采样
         return std::make_tuple(neighbors, counts);
     }
 
@@ -351,7 +354,15 @@ __host__ ShardNode new_node_from_csr_array(torch::Tensor &input_indptr,
     check_eq<int64_t>(input_indices.dim(), 1);
     const size_t edge_count = input_indices.size(0);
 
+    // 关于 pinned memory
+    // In CUDA we can use pinned memory to more efficiently copy the data 
+    // from Host to GPU than the default memory allocated via malloc at host.
     
+    // In Zero-Copy Mode, We Do These Steps:
+    // 0. Copy The Data If Needed
+    // 1. Register Buffer As Mapped Pinned Memory
+    // 2. Get Device Pointer In GPU Memory Space
+    // 3. Intiliaze A Quiver Instance And Return
 
     T *indptr_device_pointer = nullptr;
     T *edge_id_device_pointer = nullptr;
@@ -383,58 +394,7 @@ __host__ ShardNode new_node_from_csr_array(torch::Tensor &input_indptr,
 // namespace quiver
 // // 核心就在于这个 kernel ，只要这个函数能够支持从 dev_indices_ 中读取数据
 // // 分配内存这个问题就基本解决了，接下来就只需要想办法编译通过就可以了
-// template <typename T, int BLOCK_WARPS, int TILE_SIZE>
-// __global__ void CSRRowWiseSampleKernel(
-//     const uint64_t rand_seed, int num_picks, const int64_t num_rows, const T *const in_rows, 
-//     const T *const in_ptr, const T *const in_index,
-//     T *const out_ptr, T *const out_count_ptr, T *const out, T *const out_idxs)
-// {
-//     assert(blockDim.x == WARP_SIZE);
-//     assert(blockDim.y == BLOCK_WARPS);
 
-//     int64_t out_row = blockIdx.x * TILE_SIZE + threadIdx.y;
-
-//     const int64_t last_row =
-//         min(static_cast<int64_t>(blockIdx.x + 1) * TILE_SIZE, num_rows);
-
-//     // 这是个什么东西，随机初始化？
-//     curandState rng;
-//     curand_init(rand_seed * gridDim.x + blockIdx.x,
-//                 threadIdx.y * WARP_SIZE + threadIdx.x, 0, &rng);
-//     while (out_row < last_row) {
-//         const int64_t row = in_rows[out_row];
-//         const int64_t in_row_start = in_ptr[row];
-//         const int64_t deg = in_ptr[row + 1] - in_row_start;
-//         const int64_t out_row_start = out_ptr[out_row];
-//         if (deg <= num_picks) {
-//             for (int idx = threadIdx.x; idx < deg; idx += WARP_SIZE) {
-//                 const T in_idx = in_row_start + idx;
-//                 out[out_row_start + idx] = in_index[in_idx];
-//             }
-//         } else {
-//             for (int idx = threadIdx.x; idx < num_picks; idx += WARP_SIZE) {
-//                 out_idxs[out_row_start + idx] = idx;
-//             }
-//             __syncwarp();
-//             for (int idx = num_picks + threadIdx.x; idx < deg; idx += WARP_SIZE) {
-//                 const int num = curand(&rng) % (idx + 1);
-//                 if (num < num_picks) {
-//                     using Type = unsigned long long int;
-//                     atomicMax(reinterpret_cast<Type *>(out_idxs + out_row_start + num),
-//                               static_cast<Type>(idx));
-//                 }
-//             }
-//             __syncwarp();
-//             for (int idx = threadIdx.x; idx < num_picks; idx += WARP_SIZE) {
-//                 const T perm_idx = out_idxs[out_row_start + idx] + in_row_start;
-//                 out[out_row_start + idx] = in_index[perm_idx];
-//             }
-//         }
-//         out_row += BLOCK_WARPS;
-//     }
-// }
-    // ShardNode(T *row_ptr, T *edge_idx, 
-    //           T node_count, T edge_count, T gpu_memory_budget, T device = 0, T num_workers = 4)
 void register_cuda_quiver_node(pybind11::module &m)
 {
     m.def("device_node_from_csr_array", &quiver::new_node_from_csr_array);

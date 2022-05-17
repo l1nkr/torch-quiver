@@ -1,7 +1,7 @@
 import torch_quiver as torch_qv
 import torch
 # import shard_node as sn
-from .utils import Topo, parse_size
+
 
 __all__ = ["ShardNode"]
 # 现在需要决定要不要复用 quiver class 中的代码
