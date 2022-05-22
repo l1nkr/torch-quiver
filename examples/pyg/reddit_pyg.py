@@ -7,7 +7,7 @@ from torch_geometric.datasets import Reddit
 from torch_geometric.loader import NeighborSampler
 from torch_geometric.nn import SAGEConv
 import time
-torch.cuda.set_device(2)
+# torch.cuda.set_device(2)
 start = time.time()
 path = osp.join(osp.dirname(osp.realpath(__file__)), '..', 'data', 'Reddit')
 dataset = Reddit(path)

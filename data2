@@ -1,0 +1,391 @@
+LOG>>> 47% data cached
+LOG >>> Memory Budge On 0 is 255 MB
+Epoch 01, Loss: 0.5122, Approx. Train: 0.8879, Epoch Time: 4.002020835876465
+Train: 0.9515, Val: 0.9499, Test: 0.9496
+Epoch 02, Loss: 0.4282, Approx. Train: 0.9186, Epoch Time: 4.0079345703125
+Train: 0.9529, Val: 0.9489, Test: 0.9483
+Epoch 03, Loss: 0.7349, Approx. Train: 0.9135, Epoch Time: 4.04357385635376
+Train: 0.9554, Val: 0.9511, Test: 0.9491
+Epoch 04, Loss: 0.5246, Approx. Train: 0.9234, Epoch Time: 3.968888998031616
+Train: 0.9596, Val: 0.9532, Test: 0.9518
+Epoch 05, Loss: 0.4561, Approx. Train: 0.9282, Epoch Time: 4.075693845748901
+Train: 0.9585, Val: 0.9518, Test: 0.9499
+Epoch 06, Loss: 0.4586, Approx. Train: 0.9290, Epoch Time: 4.018815517425537
+Train: 0.9625, Val: 0.9532, Test: 0.9520
+Epoch 07, Loss: 0.4567, Approx. Train: 0.9296, Epoch Time: 4.044947862625122
+Train: 0.9640, Val: 0.9518, Test: 0.9527
+Epoch 08, Loss: 0.4663, Approx. Train: 0.9302, Epoch Time: 3.845677375793457
+Train: 0.9631, Val: 0.9522, Test: 0.9511
+Epoch 09, Loss: 0.4769, Approx. Train: 0.9322, Epoch Time: 4.011609792709351
+Train: 0.9643, Val: 0.9530, Test: 0.9525
+Epoch 10, Loss: 0.5850, Approx. Train: 0.9301, Epoch Time: 3.939554452896118
+Train: 0.9649, Val: 0.9531, Test: 0.9530
+497.14288902282715
+LOG>>> 47% data cached
+LOG >>> Memory Budge On 0 is 255 MB
+Epoch 01, Loss: 0.5127, Approx. Train: 0.8867, Epoch Time: 3.8128468990325928
+Train: 0.9499, Val: 0.9492, Test: 0.9477
+Epoch 02, Loss: 0.4293, Approx. Train: 0.9199, Epoch Time: 3.869678020477295
+Train: 0.9529, Val: 0.9505, Test: 0.9495
+Epoch 03, Loss: 0.4649, Approx. Train: 0.9212, Epoch Time: 3.9853854179382324
+Train: 0.9553, Val: 0.9525, Test: 0.9507
+Epoch 04, Loss: 0.5334, Approx. Train: 0.9217, Epoch Time: 3.8543100357055664
+Train: 0.9569, Val: 0.9518, Test: 0.9495
+Epoch 05, Loss: 0.5332, Approx. Train: 0.9244, Epoch Time: 3.927083969116211
+Train: 0.9587, Val: 0.9517, Test: 0.9515
+Epoch 06, Loss: 0.5709, Approx. Train: 0.9245, Epoch Time: 3.910890817642212
+Train: 0.9583, Val: 0.9507, Test: 0.9485
+Epoch 07, Loss: 0.5790, Approx. Train: 0.9271, Epoch Time: 3.955071210861206
+Train: 0.9614, Val: 0.9527, Test: 0.9519
+Epoch 08, Loss: 0.5479, Approx. Train: 0.9285, Epoch Time: 4.002664566040039
+Train: 0.9641, Val: 0.9535, Test: 0.9513
+Epoch 09, Loss: 0.5516, Approx. Train: 0.9303, Epoch Time: 3.977508068084717
+Train: 0.9649, Val: 0.9536, Test: 0.9525
+Epoch 10, Loss: 0.5434, Approx. Train: 0.9320, Epoch Time: 3.9109556674957275
+Train: 0.9657, Val: 0.9529, Test: 0.9520
+521.3228733539581
+LOG>>> 47% data cached
+LOG >>> Memory Budge On 0 is 255 MB
+Epoch 01, Loss: 0.5341, Approx. Train: 0.8870, Epoch Time: 3.911924123764038
+Train: 0.9526, Val: 0.9503, Test: 0.9503
+Epoch 02, Loss: 0.4293, Approx. Train: 0.9194, Epoch Time: 3.7598164081573486
+Train: 0.9553, Val: 0.9536, Test: 0.9511
+Epoch 03, Loss: 0.4920, Approx. Train: 0.9202, Epoch Time: 4.0580103397369385
+Train: 0.9540, Val: 0.9506, Test: 0.9482
+Epoch 04, Loss: 0.5075, Approx. Train: 0.9224, Epoch Time: 4.107917070388794
+Train: 0.9572, Val: 0.9511, Test: 0.9517
+Epoch 05, Loss: 0.5390, Approx. Train: 0.9235, Epoch Time: 3.807464361190796
+Train: 0.9593, Val: 0.9529, Test: 0.9509
+Epoch 06, Loss: 0.5919, Approx. Train: 0.9258, Epoch Time: 4.011411190032959
+Train: 0.9568, Val: 0.9511, Test: 0.9489
+Epoch 07, Loss: 0.5533, Approx. Train: 0.9268, Epoch Time: 4.236375570297241
+Train: 0.9621, Val: 0.9548, Test: 0.9519
+Epoch 08, Loss: 0.5099, Approx. Train: 0.9298, Epoch Time: 3.9205052852630615
+Train: 0.9619, Val: 0.9517, Test: 0.9516
+Epoch 09, Loss: 0.5397, Approx. Train: 0.9313, Epoch Time: 3.916810989379883
+Train: 0.9640, Val: 0.9521, Test: 0.9510
+Epoch 10, Loss: 0.5149, Approx. Train: 0.9324, Epoch Time: 3.708916425704956
+Train: 0.9653, Val: 0.9532, Test: 0.9526
+394.47106075286865
+LOG>>> 47% data cached
+LOG >>> Memory Budge On 0 is 255 MB
+Epoch 01, Loss: 0.5150, Approx. Train: 0.8877, Epoch Time: 4.063354730606079
+Train: 0.9483, Val: 0.9486, Test: 0.9471
+Epoch 02, Loss: 0.4259, Approx. Train: 0.9192, Epoch Time: 4.065770864486694
+Train: 0.9559, Val: 0.9532, Test: 0.9511
+Epoch 03, Loss: 0.4826, Approx. Train: 0.9204, Epoch Time: 3.9612460136413574
+Train: 0.9511, Val: 0.9499, Test: 0.9469
+Epoch 04, Loss: 0.5290, Approx. Train: 0.9214, Epoch Time: 4.167099237442017
+Train: 0.9549, Val: 0.9501, Test: 0.9478
+Epoch 05, Loss: 0.5315, Approx. Train: 0.9244, Epoch Time: 3.8819072246551514
+Train: 0.9597, Val: 0.9533, Test: 0.9508
+Epoch 06, Loss: 0.5840, Approx. Train: 0.9248, Epoch Time: 3.962393045425415
+Train: 0.9585, Val: 0.9530, Test: 0.9500
+Epoch 07, Loss: 0.5398, Approx. Train: 0.9264, Epoch Time: 3.9675216674804688
+Train: 0.9615, Val: 0.9517, Test: 0.9512
+Epoch 08, Loss: 0.5342, Approx. Train: 0.9286, Epoch Time: 3.964686632156372
+Train: 0.9620, Val: 0.9526, Test: 0.9514
+Epoch 09, Loss: 0.5321, Approx. Train: 0.9305, Epoch Time: 3.9878268241882324
+Train: 0.9655, Val: 0.9546, Test: 0.9530
+Epoch 10, Loss: 0.5140, Approx. Train: 0.9323, Epoch Time: 3.826211929321289
+Train: 0.9640, Val: 0.9533, Test: 0.9516
+512.4041986465454
+LOG>>> 47% data cached
+LOG >>> Memory Budge On 0 is 255 MB
+Epoch 01, Loss: 0.5062, Approx. Train: 0.8870, Epoch Time: 4.222093105316162
+Train: 0.9519, Val: 0.9517, Test: 0.9496
+Epoch 02, Loss: 0.4462, Approx. Train: 0.9192, Epoch Time: 4.157684087753296
+Train: 0.9540, Val: 0.9509, Test: 0.9498
+Epoch 03, Loss: 0.5172, Approx. Train: 0.9189, Epoch Time: 3.973820924758911
+Train: 0.9556, Val: 0.9517, Test: 0.9494
+Epoch 04, Loss: 0.5172, Approx. Train: 0.9227, Epoch Time: 3.9692800045013428
+Train: 0.9569, Val: 0.9512, Test: 0.9497
+Epoch 05, Loss: 0.5216, Approx. Train: 0.9246, Epoch Time: 4.001269102096558
+Train: 0.9590, Val: 0.9534, Test: 0.9519
+Epoch 06, Loss: 0.5968, Approx. Train: 0.9249, Epoch Time: 3.96431040763855
+Train: 0.9603, Val: 0.9528, Test: 0.9506
+Epoch 07, Loss: 0.5459, Approx. Train: 0.9265, Epoch Time: 4.019302606582642
+Train: 0.9621, Val: 0.9533, Test: 0.9513
+Epoch 08, Loss: 0.5401, Approx. Train: 0.9285, Epoch Time: 4.157196998596191
+Train: 0.9598, Val: 0.9508, Test: 0.9496
+Epoch 09, Loss: 0.5672, Approx. Train: 0.9299, Epoch Time: 4.187150001525879
+Train: 0.9638, Val: 0.9520, Test: 0.9516
+Epoch 10, Loss: 0.5461, Approx. Train: 0.9318, Epoch Time: 3.7812371253967285
+Train: 0.9649, Val: 0.9515, Test: 0.9531
+546.1500382423401
+LOG>>> 47% data cached
+LOG >>> Memory Budge On 0 is 255 MB
+Epoch 01, Loss: 0.5329, Approx. Train: 0.8864, Epoch Time: 3.8667221069335938
+Train: 0.9530, Val: 0.9533, Test: 0.9504
+Epoch 02, Loss: 0.4146, Approx. Train: 0.9204, Epoch Time: 3.8631763458251953
+Train: 0.9558, Val: 0.9509, Test: 0.9509
+Epoch 03, Loss: 0.4625, Approx. Train: 0.9214, Epoch Time: 3.7444887161254883
+Train: 0.9523, Val: 0.9504, Test: 0.9481
+Epoch 04, Loss: 0.4992, Approx. Train: 0.9230, Epoch Time: 3.9598681926727295
+Train: 0.9545, Val: 0.9493, Test: 0.9468
+Epoch 05, Loss: 0.5365, Approx. Train: 0.9232, Epoch Time: 3.8525233268737793
+Train: 0.9567, Val: 0.9502, Test: 0.9497
+Epoch 06, Loss: 0.5765, Approx. Train: 0.9243, Epoch Time: 3.934711456298828
+Train: 0.9592, Val: 0.9513, Test: 0.9509
+Epoch 07, Loss: 0.5840, Approx. Train: 0.9260, Epoch Time: 3.924363851547241
+Train: 0.9607, Val: 0.9517, Test: 0.9518
+Epoch 08, Loss: 0.5907, Approx. Train: 0.9274, Epoch Time: 3.7237865924835205
+Train: 0.9615, Val: 0.9534, Test: 0.9508
+Epoch 09, Loss: 0.5384, Approx. Train: 0.9297, Epoch Time: 3.809394121170044
+Train: 0.9644, Val: 0.9529, Test: 0.9522
+Epoch 10, Loss: 0.5171, Approx. Train: 0.9323, Epoch Time: 3.7331864833831787
+Train: 0.9645, Val: 0.9528, Test: 0.9522
+393.3496632575989
+LOG>>> 47% data cached
+LOG >>> Memory Budge On 0 is 255 MB
+Epoch 01, Loss: 0.5194, Approx. Train: 0.8850, Epoch Time: 3.9499545097351074
+Train: 0.9503, Val: 0.9502, Test: 0.9485
+Epoch 02, Loss: 0.4293, Approx. Train: 0.9196, Epoch Time: 3.8200387954711914
+Train: 0.9503, Val: 0.9491, Test: 0.9464
+Epoch 03, Loss: 0.4930, Approx. Train: 0.9199, Epoch Time: 3.9622697830200195
+Train: 0.9555, Val: 0.9509, Test: 0.9503
+Epoch 04, Loss: 0.5324, Approx. Train: 0.9217, Epoch Time: 3.756340742111206
+Train: 0.9573, Val: 0.9525, Test: 0.9498
+Epoch 05, Loss: 0.5198, Approx. Train: 0.9236, Epoch Time: 3.920217990875244
+Train: 0.9570, Val: 0.9512, Test: 0.9492
+Epoch 06, Loss: 0.5526, Approx. Train: 0.9253, Epoch Time: 3.640270709991455
+Train: 0.9616, Val: 0.9536, Test: 0.9529
+Epoch 07, Loss: 0.5643, Approx. Train: 0.9266, Epoch Time: 3.7516322135925293
+Train: 0.9623, Val: 0.9543, Test: 0.9529
+Epoch 08, Loss: 0.5485, Approx. Train: 0.9284, Epoch Time: 3.7273409366607666
+Train: 0.9642, Val: 0.9543, Test: 0.9524
+Epoch 09, Loss: 0.5140, Approx. Train: 0.9310, Epoch Time: 3.660228729248047
+Train: 0.9646, Val: 0.9522, Test: 0.9516
+Epoch 10, Loss: 0.5096, Approx. Train: 0.9328, Epoch Time: 4.018834590911865
+Train: 0.9666, Val: 0.9545, Test: 0.9538
+401.65200638771057
+LOG>>> 47% data cached
+LOG >>> Memory Budge On 0 is 255 MB
+Epoch 01, Loss: 0.5221, Approx. Train: 0.8862, Epoch Time: 3.8874664306640625
+Train: 0.9522, Val: 0.9541, Test: 0.9517
+Epoch 02, Loss: 0.3944, Approx. Train: 0.9216, Epoch Time: 3.9079840183258057
+Train: 0.9562, Val: 0.9521, Test: 0.9513
+Epoch 03, Loss: 0.4573, Approx. Train: 0.9211, Epoch Time: 3.8116276264190674
+Train: 0.9530, Val: 0.9481, Test: 0.9465
+Epoch 04, Loss: 0.5599, Approx. Train: 0.9195, Epoch Time: 3.8573334217071533
+Train: 0.9546, Val: 0.9490, Test: 0.9469
+Epoch 05, Loss: 0.5804, Approx. Train: 0.9218, Epoch Time: 3.817528247833252
+Train: 0.9571, Val: 0.9511, Test: 0.9491
+Epoch 06, Loss: 0.5727, Approx. Train: 0.9247, Epoch Time: 3.998466730117798
+Train: 0.9598, Val: 0.9530, Test: 0.9508
+Epoch 07, Loss: 0.5826, Approx. Train: 0.9283, Epoch Time: 4.036459922790527
+Train: 0.9591, Val: 0.9496, Test: 0.9501
+Epoch 08, Loss: 0.5368, Approx. Train: 0.9289, Epoch Time: 3.9154534339904785
+Train: 0.9633, Val: 0.9535, Test: 0.9531
+Epoch 09, Loss: 0.5113, Approx. Train: 0.9313, Epoch Time: 3.9015161991119385
+Train: 0.9651, Val: 0.9529, Test: 0.9536
+Epoch 10, Loss: 0.5424, Approx. Train: 0.9312, Epoch Time: 3.947624921798706
+Train: 0.9655, Val: 0.9541, Test: 0.9524
+406.88339734077454
+LOG>>> 47% data cached
+LOG >>> Memory Budge On 0 is 255 MB
+Epoch 01, Loss: 0.5206, Approx. Train: 0.8867, Epoch Time: 4.151699781417847
+Train: 0.9513, Val: 0.9515, Test: 0.9501
+Epoch 02, Loss: 0.4243, Approx. Train: 0.9192, Epoch Time: 3.972538709640503
+Train: 0.9559, Val: 0.9532, Test: 0.9517
+Epoch 03, Loss: 0.5150, Approx. Train: 0.9194, Epoch Time: 3.8578875064849854
+Train: 0.9532, Val: 0.9512, Test: 0.9484
+Epoch 04, Loss: 0.5274, Approx. Train: 0.9225, Epoch Time: 3.9784934520721436
+Train: 0.9581, Val: 0.9516, Test: 0.9513
+Epoch 05, Loss: 0.5192, Approx. Train: 0.9248, Epoch Time: 3.8847947120666504
+Train: 0.9569, Val: 0.9517, Test: 0.9497
+Epoch 06, Loss: 0.5045, Approx. Train: 0.9257, Epoch Time: 3.928945541381836
+Train: 0.9607, Val: 0.9509, Test: 0.9511
+Epoch 07, Loss: 0.5157, Approx. Train: 0.9280, Epoch Time: 4.023976564407349
+Train: 0.9634, Val: 0.9523, Test: 0.9511
+Epoch 08, Loss: 0.5380, Approx. Train: 0.9284, Epoch Time: 3.8865582942962646
+Train: 0.9620, Val: 0.9532, Test: 0.9512
+Epoch 09, Loss: 0.5253, Approx. Train: 0.9306, Epoch Time: 3.9680228233337402
+Train: 0.9644, Val: 0.9532, Test: 0.9519
+Epoch 10, Loss: 0.5312, Approx. Train: 0.9322, Epoch Time: 4.08513069152832
+Train: 0.9642, Val: 0.9512, Test: 0.9497
+544.5376789569855
+LOG>>> 47% data cached
+LOG >>> Memory Budge On 0 is 255 MB
+Epoch 01, Loss: 0.5084, Approx. Train: 0.8885, Epoch Time: 3.921360492706299
+Train: 0.9539, Val: 0.9530, Test: 0.9519
+Epoch 02, Loss: 0.4389, Approx. Train: 0.9193, Epoch Time: 3.7566750049591064
+Train: 0.9513, Val: 0.9475, Test: 0.9464
+Epoch 03, Loss: 0.5014, Approx. Train: 0.9196, Epoch Time: 3.9608845710754395
+Train: 0.9524, Val: 0.9499, Test: 0.9482
+Epoch 04, Loss: 0.5654, Approx. Train: 0.9217, Epoch Time: 3.8146114349365234
+Train: 0.9578, Val: 0.9519, Test: 0.9514
+Epoch 05, Loss: 0.5395, Approx. Train: 0.9232, Epoch Time: 3.982396125793457
+Train: 0.9588, Val: 0.9517, Test: 0.9499
+Epoch 06, Loss: 0.5187, Approx. Train: 0.9266, Epoch Time: 3.8703012466430664
+Train: 0.9622, Val: 0.9537, Test: 0.9525
+Epoch 07, Loss: 0.5275, Approx. Train: 0.9279, Epoch Time: 4.025222301483154
+Train: 0.9593, Val: 0.9512, Test: 0.9493
+Epoch 08, Loss: 0.5609, Approx. Train: 0.9282, Epoch Time: 4.0429298877716064
+Train: 0.9635, Val: 0.9535, Test: 0.9518
+Epoch 09, Loss: 0.5504, Approx. Train: 0.9308, Epoch Time: 4.071816444396973
+Train: 0.9653, Val: 0.9541, Test: 0.9530
+Epoch 10, Loss: 0.5465, Approx. Train: 0.9317, Epoch Time: 3.9651403427124023
+Train: 0.9648, Val: 0.9527, Test: 0.9519
+382.21180176734924
+LOG>>> 47% data cached
+LOG >>> Memory Budge On 0 is 255 MB
+Epoch 01, Loss: 0.5158, Approx. Train: 0.8864, Epoch Time: 4.1305341720581055
+Train: 0.9506, Val: 0.9483, Test: 0.9478
+Epoch 02, Loss: 0.4209, Approx. Train: 0.9204, Epoch Time: 3.7304372787475586
+Train: 0.9510, Val: 0.9482, Test: 0.9476
+Epoch 03, Loss: 0.5852, Approx. Train: 0.9167, Epoch Time: 3.685563564300537
+Train: 0.9546, Val: 0.9527, Test: 0.9498
+Epoch 04, Loss: 0.5159, Approx. Train: 0.9218, Epoch Time: 3.8048877716064453
+Train: 0.9562, Val: 0.9513, Test: 0.9507
+Epoch 05, Loss: 0.5111, Approx. Train: 0.9244, Epoch Time: 3.8236589431762695
+Train: 0.9598, Val: 0.9509, Test: 0.9511
+Epoch 06, Loss: 0.5114, Approx. Train: 0.9265, Epoch Time: 3.793400287628174
+Train: 0.9585, Val: 0.9501, Test: 0.9489
+Epoch 07, Loss: 0.6117, Approx. Train: 0.9273, Epoch Time: 3.689260244369507
+Train: 0.9626, Val: 0.9545, Test: 0.9522
+Epoch 08, Loss: 0.5399, Approx. Train: 0.9290, Epoch Time: 3.879148006439209
+Train: 0.9612, Val: 0.9532, Test: 0.9505
+Epoch 09, Loss: 0.5010, Approx. Train: 0.9309, Epoch Time: 3.9122989177703857
+Train: 0.9631, Val: 0.9519, Test: 0.9519
+Epoch 10, Loss: 0.4980, Approx. Train: 0.9328, Epoch Time: 3.7364227771759033
+Train: 0.9640, Val: 0.9525, Test: 0.9517
+490.4622094631195
+LOG>>> 47% data cached
+LOG >>> Memory Budge On 0 is 255 MB
+Epoch 01, Loss: 0.5215, Approx. Train: 0.8879, Epoch Time: 4.056132078170776
+Train: 0.9517, Val: 0.9526, Test: 0.9493
+Epoch 02, Loss: 0.4240, Approx. Train: 0.9197, Epoch Time: 3.928701162338257
+Train: 0.9524, Val: 0.9500, Test: 0.9485
+Epoch 03, Loss: 0.4903, Approx. Train: 0.9199, Epoch Time: 3.7784624099731445
+Train: 0.9546, Val: 0.9494, Test: 0.9493
+Epoch 04, Loss: 0.5304, Approx. Train: 0.9219, Epoch Time: 3.955474615097046
+Train: 0.9564, Val: 0.9517, Test: 0.9502
+Epoch 05, Loss: 0.5825, Approx. Train: 0.9225, Epoch Time: 3.8575236797332764
+Train: 0.9589, Val: 0.9551, Test: 0.9518
+Epoch 06, Loss: 0.5943, Approx. Train: 0.9248, Epoch Time: 4.004844665527344
+Train: 0.9605, Val: 0.9534, Test: 0.9515
+Epoch 07, Loss: 0.5290, Approx. Train: 0.9275, Epoch Time: 3.7675976753234863
+Train: 0.9617, Val: 0.9514, Test: 0.9517
+Epoch 08, Loss: 0.5467, Approx. Train: 0.9291, Epoch Time: 3.7910428047180176
+Train: 0.9615, Val: 0.9507, Test: 0.9491
+Epoch 09, Loss: 0.4929, Approx. Train: 0.9323, Epoch Time: 4.184253931045532
+Train: 0.9641, Val: 0.9532, Test: 0.9511
+Epoch 10, Loss: 0.4882, Approx. Train: 0.9339, Epoch Time: 3.814059019088745
+Train: 0.9650, Val: 0.9523, Test: 0.9516
+499.9594142436981
+LOG>>> 47% data cached
+LOG >>> Memory Budge On 0 is 255 MB
+Epoch 01, Loss: 0.5201, Approx. Train: 0.8863, Epoch Time: 3.8836405277252197
+Train: 0.9535, Val: 0.9526, Test: 0.9511
+Epoch 02, Loss: 0.4238, Approx. Train: 0.9196, Epoch Time: 3.6699326038360596
+Train: 0.9527, Val: 0.9487, Test: 0.9496
+Epoch 03, Loss: 0.5052, Approx. Train: 0.9205, Epoch Time: 3.7153775691986084
+Train: 0.9530, Val: 0.9483, Test: 0.9489
+Epoch 04, Loss: 0.5427, Approx. Train: 0.9204, Epoch Time: 3.9001314640045166
+Train: 0.9553, Val: 0.9491, Test: 0.9486
+Epoch 05, Loss: 0.5309, Approx. Train: 0.9237, Epoch Time: 3.916156053543091
+Train: 0.9590, Val: 0.9515, Test: 0.9499
+Epoch 06, Loss: 0.5354, Approx. Train: 0.9259, Epoch Time: 3.831019401550293
+Train: 0.9615, Val: 0.9523, Test: 0.9518
+Epoch 07, Loss: 0.5502, Approx. Train: 0.9276, Epoch Time: 4.025379419326782
+Train: 0.9620, Val: 0.9501, Test: 0.9502
+Epoch 08, Loss: 0.5964, Approx. Train: 0.9279, Epoch Time: 3.7957005500793457
+Train: 0.9622, Val: 0.9517, Test: 0.9522
+Epoch 09, Loss: 0.5645, Approx. Train: 0.9294, Epoch Time: 3.8561699390411377
+Train: 0.9640, Val: 0.9530, Test: 0.9516
+Epoch 10, Loss: 0.4988, Approx. Train: 0.9318, Epoch Time: 3.697341203689575
+Train: 0.9639, Val: 0.9516, Test: 0.9513
+475.46099829673767
+LOG>>> 47% data cached
+LOG >>> Memory Budge On 0 is 255 MB
+Epoch 01, Loss: 0.5156, Approx. Train: 0.8867, Epoch Time: 3.9560070037841797
+Train: 0.9527, Val: 0.9522, Test: 0.9504
+Epoch 02, Loss: 0.4293, Approx. Train: 0.9195, Epoch Time: 3.713731527328491
+Train: 0.9530, Val: 0.9495, Test: 0.9492
+Epoch 03, Loss: 0.5213, Approx. Train: 0.9189, Epoch Time: 3.7061119079589844
+Train: 0.9485, Val: 0.9469, Test: 0.9433
+Epoch 04, Loss: 0.5545, Approx. Train: 0.9202, Epoch Time: 3.880232572555542
+Train: 0.9555, Val: 0.9514, Test: 0.9486
+Epoch 05, Loss: 0.5508, Approx. Train: 0.9249, Epoch Time: 3.7805957794189453
+Train: 0.9594, Val: 0.9530, Test: 0.9512
+Epoch 06, Loss: 0.5023, Approx. Train: 0.9268, Epoch Time: 3.890983819961548
+Train: 0.9623, Val: 0.9544, Test: 0.9532
+Epoch 07, Loss: 0.5352, Approx. Train: 0.9276, Epoch Time: 3.86266827583313
+Train: 0.9572, Val: 0.9482, Test: 0.9477
+Epoch 08, Loss: 0.5463, Approx. Train: 0.9293, Epoch Time: 3.8505849838256836
+Train: 0.9636, Val: 0.9548, Test: 0.9522
+Epoch 09, Loss: 0.5244, Approx. Train: 0.9308, Epoch Time: 3.7778759002685547
+Train: 0.9648, Val: 0.9532, Test: 0.9518
+Epoch 10, Loss: 0.5392, Approx. Train: 0.9313, Epoch Time: 3.86590576171875
+Train: 0.9652, Val: 0.9521, Test: 0.9511
+397.9070317745209
+LOG>>> 47% data cached
+LOG >>> Memory Budge On 0 is 255 MB
+Epoch 01, Loss: 0.5455, Approx. Train: 0.8846, Epoch Time: 4.018718242645264
+Train: 0.9513, Val: 0.9492, Test: 0.9485
+Epoch 02, Loss: 0.4302, Approx. Train: 0.9192, Epoch Time: 3.8543899059295654
+Train: 0.9530, Val: 0.9499, Test: 0.9484
+Epoch 03, Loss: 0.4813, Approx. Train: 0.9203, Epoch Time: 3.8551135063171387
+Train: 0.9552, Val: 0.9512, Test: 0.9496
+Epoch 04, Loss: 0.4861, Approx. Train: 0.9224, Epoch Time: 3.916797161102295
+Train: 0.9561, Val: 0.9504, Test: 0.9490
+Epoch 05, Loss: 0.5323, Approx. Train: 0.9240, Epoch Time: 3.914116859436035
+Train: 0.9598, Val: 0.9529, Test: 0.9519
+Epoch 06, Loss: 0.5496, Approx. Train: 0.9247, Epoch Time: 3.9512548446655273
+Train: 0.9603, Val: 0.9519, Test: 0.9508
+Epoch 07, Loss: 0.5231, Approx. Train: 0.9279, Epoch Time: 3.9361793994903564
+Train: 0.9628, Val: 0.9534, Test: 0.9517
+Epoch 08, Loss: 0.5889, Approx. Train: 0.9274, Epoch Time: 3.9447834491729736
+Train: 0.9590, Val: 0.9509, Test: 0.9489
+Epoch 09, Loss: 0.5622, Approx. Train: 0.9281, Epoch Time: 4.007543087005615
+Train: 0.9630, Val: 0.9513, Test: 0.9506
+Epoch 10, Loss: 0.5082, Approx. Train: 0.9317, Epoch Time: 3.985140562057495
+Train: 0.9656, Val: 0.9529, Test: 0.9517
+512.6233696937561
+LOG>>> 47% data cached
+LOG >>> Memory Budge On 0 is 255 MB
+Epoch 01, Loss: 0.5173, Approx. Train: 0.8861, Epoch Time: 3.7566592693328857
+Train: 0.9513, Val: 0.9516, Test: 0.9494
+Epoch 02, Loss: 0.4289, Approx. Train: 0.9198, Epoch Time: 3.743546962738037
+Train: 0.9515, Val: 0.9495, Test: 0.9483
+Epoch 03, Loss: 0.5079, Approx. Train: 0.9195, Epoch Time: 4.038884878158569
+Train: 0.9381, Val: 0.9399, Test: 0.9359
+Epoch 04, Loss: 0.6046, Approx. Train: 0.9197, Epoch Time: 3.9145727157592773
+Train: 0.9572, Val: 0.9534, Test: 0.9494
+Epoch 05, Loss: 0.5051, Approx. Train: 0.9246, Epoch Time: 4.0523316860198975
+Train: 0.9602, Val: 0.9522, Test: 0.9508
+Epoch 06, Loss: 0.5159, Approx. Train: 0.9270, Epoch Time: 3.8321707248687744
+Train: 0.9602, Val: 0.9520, Test: 0.9508
+Epoch 07, Loss: 0.5411, Approx. Train: 0.9266, Epoch Time: 4.0164830684661865
+Train: 0.9627, Val: 0.9524, Test: 0.9506
+Epoch 08, Loss: 0.5175, Approx. Train: 0.9298, Epoch Time: 3.6804115772247314
+Train: 0.9638, Val: 0.9533, Test: 0.9519
+Epoch 09, Loss: 0.4986, Approx. Train: 0.9304, Epoch Time: 3.7376060485839844
+Train: 0.9643, Val: 0.9508, Test: 0.9509
+Epoch 10, Loss: 0.5178, Approx. Train: 0.9318, Epoch Time: 3.7339813709259033
+Train: 0.9651, Val: 0.9533, Test: 0.9524
+401.8096237182617
+LOG>>> 47% data cached
+LOG >>> Memory Budge On 0 is 255 MB
+Epoch 01, Loss: 0.5260, Approx. Train: 0.8859, Epoch Time: 3.9659199714660645
+Train: 0.9510, Val: 0.9530, Test: 0.9496
+Epoch 02, Loss: 0.4202, Approx. Train: 0.9193, Epoch Time: 3.7839906215667725
+Train: 0.9512, Val: 0.9488, Test: 0.9483
+Epoch 03, Loss: 0.4890, Approx. Train: 0.9199, Epoch Time: 3.709036111831665
+Train: 0.9493, Val: 0.9479, Test: 0.9444
+Epoch 04, Loss: 0.5408, Approx. Train: 0.9221, Epoch Time: 4.011633634567261
+Train: 0.9542, Val: 0.9506, Test: 0.9481
+Epoch 05, Loss: 0.5738, Approx. Train: 0.9227, Epoch Time: 3.946213722229004
+Train: 0.9588, Val: 0.9515, Test: 0.9492
+Epoch 06, Loss: 0.5496, Approx. Train: 0.9253, Epoch Time: 3.9342238903045654
+Train: 0.9603, Val: 0.9511, Test: 0.9501
+Epoch 07, Loss: 0.5434, Approx. Train: 0.9282, Epoch Time: 4.053626537322998
+Train: 0.9628, Val: 0.9531, Test: 0.9525
+Epoch 08, Loss: 0.5094, Approx. Train: 0.9294, Epoch Time: 3.927016019821167
+Train: 0.9641, Val: 0.9532, Test: 0.9535
+Epoch 09, Loss: 0.4778, Approx. Train: 0.9320, Epoch Time: 3.846498489379883
+Train: 0.9635, Val: 0.9528, Test: 0.9514
+Epoch 10, Loss: 0.4766, Approx. Train: 0.9329, Epoch Time: 3.905670166015625
+Train: 0.9668, Val: 0.9545, Test: 0.9525
+460.21043515205383
