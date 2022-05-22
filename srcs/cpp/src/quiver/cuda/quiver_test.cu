@@ -59,6 +59,19 @@ __global__ void CSRRowWiseSampleKernel(
     curand_init(rand_seed * gridDim.x + blockIdx.x,
                 threadIdx.y * WARP_SIZE + threadIdx.x, 0, &rng);
     while (out_row < last_row) {
+        //out_row是线程的索引
+        // 使用线程索引找到需要进行采样的节点编号
+        // 使用节点编号从indptr中索引到该节点csr中的那一行（想想csr格式是如何表示数据，这个索引可以获取那一行的开头，所以才会被命名为 start）
+        // deg就是相邻节点进行相减，获取到这个节点有多少条连接的边。（degree算法之前已经分析过了）
+        // 依据该线程编号从out_ptr中索引这个节点之前需要对多少个节点进行采样
+        // 如果degree小于等于要求进行采样的节点个数
+        //      使用in_row_start计算出邻居节点再indice中的索引
+        //      判断在cpu中还是gpu中
+        // 如果degree大于要求采样的节点个数
+        //      使用水库算法进行随机抽样
+        //          先将前 num_picks 个节点放入水库中，然后随机进行替换
+        //      计算出被采样到的邻居节点在indice中的索引
+        //      判断在cpu还是gpu中
         const int64_t row = in_rows[out_row];
         // row：需要采样节点的序号
         const int64_t in_row_start = in_ptr[row];
@@ -90,6 +103,7 @@ __global__ void CSRRowWiseSampleKernel(
             // 邻居节点个数大于要求的节点数量，随机采样
             // generate permutation list via reservoir algorithm
             for (int idx = threadIdx.x; idx < num_picks; idx += WARP_SIZE) {
+                // 水库算法的初始化工作，将前 num_picks 个节点都进行采样
                 out_idxs[out_row_start + idx] = idx;
             }
             __syncwarp();
@@ -104,6 +118,7 @@ __global__ void CSRRowWiseSampleKernel(
                               static_cast<Type>(idx));
                 }
             }
+            // 随机采样过后，out_idxs 中的数据就是表示需要对哪些节点进行采样
             __syncwarp();
             // copy permutation over
             for (int idx = threadIdx.x; idx < num_picks; idx += WARP_SIZE) {

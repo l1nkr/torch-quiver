@@ -11,8 +11,8 @@ from torch_geometric.nn import SAGEConv
 
 import time
 
-#root = osp.join(osp.dirname(osp.realpath(__file__)), '..', 'data', 'products')
-root = "/data/products/"
+root = osp.join(osp.dirname(osp.realpath(__file__)), '..', 'data', 'products')
+# root = "/data/products/"
 dataset = PygNodePropPredDataset('ogbn-products', root)
 split_idx = dataset.get_idx_split()
 evaluator = Evaluator(name='ogbn-products')

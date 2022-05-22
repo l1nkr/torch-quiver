@@ -172,8 +172,9 @@ def test():
 
 
 for epoch in range(1, 11):
+    epoch_start = time.time()
     loss, acc = train(epoch)
-    print(f'Epoch {epoch:02d}, Loss: {loss:.4f}, Approx. Train: {acc:.4f}')
+    print(f'Epoch {epoch:02d}, Loss: {loss:.4f}, Approx. Train: {acc:.4f}, Epoch Time: {time.time() - epoch_start}')
     train_acc, val_acc, test_acc = test()
     print(f'Train: {train_acc:.4f}, Val: {val_acc:.4f}, '
           f'Test: {test_acc:.4f}')
